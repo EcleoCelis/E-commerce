@@ -1,0 +1,39 @@
+<template id="template-reports">
+<section class="admin-section" aria-labelledby="admin-reports-title">
+    <div class="admin-section-header">
+        <div>
+            <h2 id="admin-reports-title">Reports &amp; Data Exports</h2>
+        </div>
+        <div class="admin-button-group">
+            <button type="button" onclick="adminApp.downloadExport('sales')" class="admin-button-secondary">Export Sales CSV</button>
+            <button type="button" onclick="adminApp.downloadExport('inventory')" class="admin-button-secondary">Export Inventory CSV</button>
+            <button type="button" onclick="adminApp.downloadExport('orders')" class="admin-button-secondary">Export Orders CSV</button>
+            <button type="button" onclick="adminApp.refreshReports()" class="admin-button-primary">Refresh Data</button>
+        </div>
+    </div>
+
+    <div class="admin-panel" style="padding: 0.85rem 1.25rem;">
+        <div class="admin-section-header" style="margin-bottom: 0;">
+            <div class="analytics-segmented-toggle" role="tablist" aria-label="Reports View">
+                <button type="button" role="tab" onclick="adminApp.setReportsTab('sales')" class="analytics-seg-btn {{salesTabActive}}">Sales Performance</button>
+                <button type="button" role="tab" onclick="adminApp.setReportsTab('inventory')" class="analytics-seg-btn {{inventoryTabActive}}">Inventory Valuation</button>
+            </div>
+            <div class="admin-filter-pill-bar {{dateFiltersVisibility}}" role="group" aria-label="Sales Date Range">
+                <button type="button" onclick="adminApp.setReportsRange('all')" class="admin-pill-btn {{rangeAllActive}}">All Time</button>
+                <button type="button" onclick="adminApp.setReportsRange('today')" class="admin-pill-btn {{rangeTodayActive}}">Today</button>
+                <button type="button" onclick="adminApp.setReportsRange('7d')" class="admin-pill-btn {{range7dActive}}">Last 7 Days</button>
+                <button type="button" onclick="adminApp.setReportsRange('30d')" class="admin-pill-btn {{range30dActive}}">Last 30 Days</button>
+                <button type="button" onclick="adminApp.setReportsRange('this_month')" class="admin-pill-btn {{rangeMonthActive}}">This Month</button>
+                <button type="button" onclick="adminApp.setReportsRange('custom')" class="admin-pill-btn {{rangeCustomActive}}">Custom Range</button>
+            </div>
+        </div>
+        {{customDateFilterBar}}
+    </div>
+
+    <div class="admin-metrics-grid">
+        {{reportMetricCards}}
+    </div>
+
+    {{reportMainContent}}
+</section>
+</template>

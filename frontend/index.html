@@ -1,116 +1,67 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SecondMarket | Secondhand E-Commerce Marketplace</title>
     
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS (for baseline utilities) & Custom Design Tokens -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            dark: '#4E4638',
-                            secondary: '#776B56',
-                            accent: '#9A8B74',
-                            soft: '#B9A995',
-                            light: '#D7CEC1',
-                            surface: '#FAF8F5',
-                            white: '#FFFFFF'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        serif: ['"Playfair Display"', 'serif']
-                    }
-                }
-            }
-        }
-    </script>
-    
+    <link rel="stylesheet" href="/static/css/typography.css">
     <link rel="stylesheet" href="/static/css/marketplace/base.css">
     <link rel="stylesheet" href="/static/css/auth.css">
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
-    <!-- TOP ANNOUNCEMENT BAR -->
-    <div class="bg-[#4E4638] text-[#D7CEC1] text-xs py-2 px-4 text-center tracking-wide font-light flex justify-between items-center max-w-7xl mx-auto w-full sm:px-8">
-        <div class="hidden md:flex items-center gap-4 text-xs text-[#B9A995]">
-            <span>Local secondhand finds refreshed weekly</span>
-            <span>|</span>
-            <span>Admin-verified listings and clear item conditions</span>
-        </div>
-        <div class="mx-auto md:mx-0 flex items-center gap-6">
-            <span class="hover:text-white transition cursor-pointer" onclick="app.showToast('Saved marketplace preferences for your next visit.', 'info')">Buyer-friendly marketplace browsing</span>
-            <!-- Currency / Region Selector -->
-            <div class="relative group">
-                <button class="flex items-center gap-1 hover:text-white transition focus:outline-none" aria-label="Select Currency">
-                    <span id="current-currency">PHP (₱)</span>
-                    <svg class="w-3 h-3 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-                </button>
-                <div class="absolute right-0 top-full mt-1 w-28 bg-[#4E4638] border border-[#776B56] shadow-lg rounded hidden group-hover:block z-50">
-                    <button onclick="app.setCurrency('PHP', 1, '₱')" class="block w-full text-left px-3 py-1.5 hover:bg-[#776B56] hover:text-white text-xs">PHP (₱)</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- MAIN STICKY NAVIGATION HEADER -->
     <header class="sticky top-0 z-40 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#D7CEC1]/50 transition-all duration-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2 sm:gap-4 min-w-0">
             
             <!-- Mobile Menu Toggle -->
-            <button onclick="app.toggleMobileMenu()" class="lg:hidden p-2 text-[#4E4638] hover:text-[#9A8B74]" aria-label="Open Navigation Menu">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <button type="button" onclick="app.toggleMobileMenu()" class="lg:hidden min-w-[44px] min-h-[44px] flex items-center justify-center p-2 text-[#4E4638] hover:text-[#6E614D] flex-shrink-0" aria-label="Open Navigation Menu" aria-controls="mobile-menu" aria-expanded="false">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
 
             <!-- Brand Logo -->
-            <a href="#" onclick="app.navigate('home'); return false;" class="text-2xl font-serif tracking-widest text-[#4E4638] uppercase font-semibold flex items-center gap-2">
-                <span class="w-3 h-3 bg-[#9A8B74] rounded-full inline-block"></span>
+            <a href="#" onclick="app.navigate('home'); return false;" class="marketplace-brand-link text-lg sm:text-2xl font-serif tracking-widest text-[#4E4638] uppercase font-semibold flex items-center gap-2 whitespace-nowrap min-w-0">
+                <span class="w-3 h-3 bg-[#6E614D] rounded-full inline-block flex-shrink-0" aria-hidden="true"></span>
                 SecondMarket
             </a>
 
             <!-- Desktop Main Navigation -->
-            <nav class="hidden lg:flex items-center gap-8 text-xs uppercase tracking-widest font-medium text-[#4E4638]">
-                <a href="#" onclick="app.navigate('home'); return false;" class="nav-link py-2 hover:text-[#9A8B74] transition border-b-2 border-transparent hover:border-[#9A8B74]">Home</a>
-                <a href="#" onclick="app.navigate('shop'); return false;" class="nav-link py-2 hover:text-[#9A8B74] transition border-b-2 border-transparent hover:border-[#9A8B74]">Catalog</a>
-                <a href="#" onclick="app.navigate('shop', {category: 'electronics'}); return false;" class="nav-link py-2 hover:text-[#9A8B74] transition border-b-2 border-transparent hover:border-[#9A8B74]">Electronics</a>
-                <a href="#" onclick="app.navigate('shop', {category: 'fashion'}); return false;" class="nav-link py-2 hover:text-[#9A8B74] transition border-b-2 border-transparent hover:border-[#9A8B74]">Fashion</a>
-                <a href="#" onclick="app.navigate('shop', {category: 'books'}); return false;" class="nav-link py-2 hover:text-[#9A8B74] transition border-b-2 border-transparent hover:border-[#9A8B74]">Books</a>
-                <a href="#" onclick="app.navigate('shop', {category: 'furniture'}); return false;" class="nav-link py-2 hover:text-[#9A8B74] transition border-b-2 border-transparent hover:border-[#9A8B74]">Furniture</a>
+            <nav aria-label="Main Navigation" class="marketplace-main-nav hidden lg:flex items-center gap-8 text-xs uppercase tracking-widest font-medium text-[#4E4638]">
+                <a href="#" onclick="app.navigate('home'); return false;" class="nav-link py-2 hover:text-[#6E614D] transition border-b-2 border-transparent hover:border-[#6E614D]">Home</a>
+                <a href="#" onclick="app.navigate('shop'); return false;" class="nav-link py-2 hover:text-[#6E614D] transition border-b-2 border-transparent hover:border-[#6E614D]">Catalog</a>
+                <a href="#" onclick="app.navigate('shop', {category: 'electronics'}); return false;" class="nav-link py-2 hover:text-[#6E614D] transition border-b-2 border-transparent hover:border-[#6E614D]">Electronics</a>
+                <a href="#" onclick="app.navigate('shop', {category: 'fashion'}); return false;" class="nav-link py-2 hover:text-[#6E614D] transition border-b-2 border-transparent hover:border-[#6E614D]">Fashion</a>
+                <a href="#" onclick="app.navigate('shop', {category: 'books'}); return false;" class="nav-link py-2 hover:text-[#6E614D] transition border-b-2 border-transparent hover:border-[#6E614D]">Books</a>
+                <a href="#" onclick="app.navigate('shop', {category: 'furniture'}); return false;" class="nav-link py-2 hover:text-[#6E614D] transition border-b-2 border-transparent hover:border-[#6E614D]">Furniture</a>
+                <a href="#" onclick="app.navigate('about'); return false;" class="nav-link py-2 hover:text-[#6E614D] transition border-b-2 border-transparent hover:border-[#6E614D]">About</a>
             </nav>
 
             <!-- Header Actions / Quick Controls -->
-            <div class="flex items-center gap-5">
+            <div class="flex items-center gap-1 sm:gap-3 flex-shrink-0">
                 <!-- Search Toggle -->
-                <button onclick="app.toggleSearchModal()" class="p-2 text-[#4E4638] hover:text-[#9A8B74] transition relative group" aria-label="Open Search">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <button type="button" onclick="app.toggleSearchModal()" class="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 sm:p-2.5 text-[#4E4638] hover:text-[#6E614D] hover:bg-[#D7CEC1]/20 rounded-full transition relative group" aria-label="Open Search">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 </button>
 
-                <!-- Account / Profile Dropdown -->
-                <div class="relative group hidden sm:block">
-                    <button onclick="app.state.user ? app.navigate('account') : window.location.href='/login.html'" class="p-2 text-[#4E4638] hover:text-[#9A8B74] transition flex items-center gap-1" aria-label="Account Menu">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    </button>
+                <!-- Buyer Auth / Account Header Control -->
+                <div id="buyer-header-auth" class="flex items-center">
+                    <div class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#4E4638]">
+                        <a href="/login.html" onclick="window.location.href='/login.html'" class="min-h-[44px] flex items-center hover:text-[#6E614D] transition py-1.5 px-2 rounded hover:bg-[#D7CEC1]/20 whitespace-nowrap">Log in</a>
+                        <span class="text-[#D7CEC1] select-none hidden sm:inline" aria-hidden="true">|</span>
+                        <a href="/register.html" class="min-h-[44px] flex items-center hover:text-[#6E614D] transition py-1.5 px-2 rounded hover:bg-[#D7CEC1]/20 hidden sm:inline-flex whitespace-nowrap">Sign up</a>
+                    </div>
                 </div>
 
                 <!-- Wishlist Badge Counter -->
-                <button onclick="app.navigate('wishlist')" class="p-2 text-[#4E4638] hover:text-[#9A8B74] transition relative" aria-label="View Wishlist">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 21.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/></svg>
-                    <span id="wishlist-counter" class="absolute -top-1 -right-1 bg-[#9A8B74] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-semibold">0</span>
+                <button type="button" onclick="app.navigate('wishlist')" class="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 sm:p-2.5 text-[#4E4638] hover:text-[#6E614D] hover:bg-[#D7CEC1]/20 rounded-full transition relative" aria-label="View Wishlist">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 21.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/></svg>
+                    <span id="wishlist-counter" class="absolute top-0.5 right-0.5 bg-[#6E614D] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-semibold">0</span>
                 </button>
 
                 <!-- Shopping Bag Drawer Trigger -->
-                <button onclick="app.toggleCartDrawer()" class="p-2 text-[#4E4638] hover:text-[#9A8B74] transition relative flex items-center gap-2 border border-[#B9A995]/40 px-3 py-1.5 rounded-full hover:border-[#9A8B74]" aria-label="Shopping Cart">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                <button type="button" onclick="app.toggleCartDrawer()" class="min-w-[44px] min-h-[44px] justify-center p-2 text-[#4E4638] hover:text-[#6E614D] transition relative flex items-center gap-1.5 sm:gap-2 border border-[#B9A995]/40 px-2.5 sm:px-3.5 py-1.5 rounded-full hover:border-[#6E614D] hover:bg-[#FAF8F5]" aria-label="Shopping Cart">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                     <span class="text-xs font-semibold uppercase tracking-wider hidden md:inline">Bag</span>
                     <span id="cart-counter" class="bg-[#4E4638] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
                 </button>
@@ -119,23 +70,24 @@
     </header>
 
     <!-- SEARCH OVERLAY MODAL -->
-    <div id="search-modal" class="fixed inset-0 z-50 bg-[#4E4638]/60 backdrop-blur-sm hidden flex-col justify-start pt-16 px-4">
+    <div id="search-modal" role="dialog" aria-modal="true" aria-labelledby="search-modal-title" aria-hidden="true" class="fixed inset-0 z-50 bg-[#4E4638]/60 backdrop-blur-sm hidden flex-col justify-start pt-16 px-4">
         <div class="max-w-3xl w-full mx-auto bg-[#FAF8F5] rounded-lg shadow-2xl p-6 fade-in border border-[#B9A995]">
+            <h2 id="search-modal-title" class="sr-only">Search SecondMarket Listings</h2>
             <div class="flex justify-between items-center pb-4 border-b border-[#D7CEC1]">
                 <div class="flex items-center gap-3 flex-grow mr-4">
-                    <svg class="w-6 h-6 text-[#776B56]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <input id="search-input" type="text" oninput="app.handleSearchInput(this.value)" placeholder="Search by name, category, material, or keyword..." class="w-full bg-transparent text-lg text-[#4E4638] focus:outline-none font-medium placeholder-[#776B56]">
+                    <svg class="w-6 h-6 text-[#776B56] shrink-0" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <input id="search-input" type="text" oninput="app.handleSearchInput(this.value)" aria-label="Search marketplace by name, category, material, or keyword" placeholder="Search by name, category, material, or keyword..." class="w-full bg-transparent text-lg text-[#4E4638] focus:outline-none font-medium placeholder-[#776B56]">
                 </div>
-                <button onclick="app.toggleSearchModal()" class="text-[#776B56] hover:text-[#4E4638] text-sm uppercase tracking-wider font-semibold">Close (ESC)</button>
+                <button type="button" onclick="app.toggleSearchModal()" class="text-[#4E4638] hover:text-[#6E614D] text-sm uppercase tracking-wider font-semibold min-h-[44px] inline-flex items-center px-2">Close (ESC)</button>
             </div>
             
             <div class="mt-6">
                 <p class="text-xs font-bold text-[#776B56] uppercase tracking-widest mb-3">Popular Searches</p>
                 <div class="flex flex-wrap gap-2 mb-6">
-                    <button onclick="app.quickSearch('headphones')" class="px-3 py-1 bg-[#D7CEC1]/40 hover:bg-[#9A8B74] hover:text-white text-xs rounded transition">Headphones</button>
-                    <button onclick="app.quickSearch('watch')" class="px-3 py-1 bg-[#D7CEC1]/40 hover:bg-[#9A8B74] hover:text-white text-xs rounded transition">Watch</button>
-                    <button onclick="app.quickSearch('shirt')" class="px-3 py-1 bg-[#D7CEC1]/40 hover:bg-[#9A8B74] hover:text-white text-xs rounded transition">Shirts</button>
-                    <button onclick="app.quickSearch('backpack')" class="px-3 py-1 bg-[#D7CEC1]/40 hover:bg-[#9A8B74] hover:text-white text-xs rounded transition">Backpacks</button>
+                    <button type="button" onclick="app.quickSearch('headphones')" class="px-3 py-2 min-h-[44px] sm:min-h-0 sm:py-1.5 bg-[#D7CEC1]/40 hover:bg-[#6E614D] hover:text-white text-xs text-[#4E4638] rounded transition">Headphones</button>
+                    <button type="button" onclick="app.quickSearch('watch')" class="px-3 py-2 min-h-[44px] sm:min-h-0 sm:py-1.5 bg-[#D7CEC1]/40 hover:bg-[#6E614D] hover:text-white text-xs text-[#4E4638] rounded transition">Watch</button>
+                    <button type="button" onclick="app.quickSearch('shirt')" class="px-3 py-2 min-h-[44px] sm:min-h-0 sm:py-1.5 bg-[#D7CEC1]/40 hover:bg-[#6E614D] hover:text-white text-xs text-[#4E4638] rounded transition">Shirts</button>
+                    <button type="button" onclick="app.quickSearch('backpack')" class="px-3 py-2 min-h-[44px] sm:min-h-0 sm:py-1.5 bg-[#D7CEC1]/40 hover:bg-[#6E614D] hover:text-white text-xs text-[#4E4638] rounded transition">Backpacks</button>
                 </div>
 
                 <div id="search-results" class="max-h-80 overflow-y-auto space-y-3">
@@ -145,17 +97,33 @@
         </div>
     </div>
 
+    <!-- CLIENT CARE / INFO MODAL -->
+    <div id="info-modal" role="dialog" aria-modal="true" aria-labelledby="info-modal-title" aria-hidden="true" class="fixed inset-0 z-50 bg-[#4E4638]/60 backdrop-blur-sm hidden flex-col justify-center items-center px-4" onclick="if(event.target===this) app.closeInfoModal()">
+        <div class="max-w-lg w-full bg-[#FAF8F5] rounded-xl shadow-2xl p-6 border border-[#B9A995] fade-in relative">
+            <div class="flex justify-between items-center pb-3 border-b border-[#D7CEC1]">
+                <h2 id="info-modal-title" class="font-serif text-xl font-semibold text-[#4E4638]">Policy Information</h2>
+                <button type="button" onclick="app.closeInfoModal()" class="text-[#776B56] hover:text-[#4E4638] text-lg font-semibold min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-full hover:bg-[#D7CEC1]/20" aria-label="Close modal">&times;</button>
+            </div>
+            <div id="info-modal-body" class="mt-4 text-xs text-[#776B56] leading-relaxed space-y-3">
+                <!-- Injected dynamically -->
+            </div>
+            <div class="mt-6 pt-4 border-t border-[#D7CEC1] flex justify-end">
+                <button type="button" onclick="app.closeInfoModal()" class="btn-primary text-xs py-2.5 px-5 min-h-[44px]">Understood</button>
+            </div>
+        </div>
+    </div>
+
     <!-- SLIDE-OVER CART DRAWER -->
-    <div id="cart-drawer-backdrop" class="fixed inset-0 bg-[#4E4638]/50 backdrop-blur-xs z-50 hidden transition-opacity" onclick="app.toggleCartDrawer()"></div>
-    <div id="cart-drawer" class="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#FAF8F5] z-50 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out border-l border-[#B9A995]">
+    <div id="cart-drawer-backdrop" aria-hidden="true" class="fixed inset-0 bg-[#4E4638]/50 backdrop-blur-xs z-50 hidden transition-opacity" onclick="app.toggleCartDrawer()"></div>
+    <div id="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-drawer-title" aria-hidden="true" inert class="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#FAF8F5] z-50 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out border-l border-[#B9A995]">
         <!-- Cart Drawer Header -->
         <div class="p-6 border-b border-[#D7CEC1] flex items-center justify-between bg-white">
             <div class="flex items-center gap-2">
-                <h2 class="font-serif text-xl font-semibold text-[#4E4638]">Your Selection</h2>
+                <h2 id="cart-drawer-title" class="font-serif text-xl font-semibold text-[#4E4638]">Your Selection</h2>
                 <span id="drawer-cart-count" class="text-xs text-[#776B56]">(0 items)</span>
             </div>
-            <button onclick="app.toggleCartDrawer()" class="p-2 text-[#776B56] hover:text-[#4E4638]" aria-label="Close Shopping Bag">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
+            <button type="button" onclick="app.toggleCartDrawer()" class="p-2 min-w-[44px] min-h-[44px] inline-flex items-center justify-center text-[#776B56] hover:text-[#4E4638] rounded-full hover:bg-[#D7CEC1]/20" aria-label="Close Shopping Bag">
+                <svg class="w-6 h-6" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
 
@@ -178,35 +146,39 @@
             </div>
             <div class="pt-2 gap-2 flex flex-col">
                 <button onclick="app.navigate('cart'); app.toggleCartDrawer();" class="btn-outline w-full py-3">View Shopping Bag</button>
-                <button onclick="window.location.href='/checkout'" class="btn-primary w-full py-3 text-center">Proceed to Checkout</button>
+                <button id="cart-drawer-checkout-btn" onclick="if (app.goToCheckout()) { window.location.href='/checkout'; }" class="btn-primary w-full py-3 text-center">Proceed to Checkout</button>
             </div>
         </div>
     </div>
 
     <!-- MOBILE NAVIGATION MENU DRAWER -->
-    <div id="mobile-menu" class="fixed inset-y-0 left-0 w-4/5 max-w-sm bg-[#FAF8F5] z-50 transform -translate-x-full transition-transform duration-300 ease-in-out border-r border-[#B9A995] flex flex-col">
+    <div id="mobile-menu" role="dialog" aria-modal="true" aria-label="Navigation menu" aria-hidden="true" inert class="fixed inset-y-0 left-0 w-4/5 max-w-sm bg-[#FAF8F5] z-50 transform -translate-x-full transition-transform duration-300 ease-in-out border-r border-[#B9A995] flex flex-col">
         <div class="p-6 border-b border-[#D7CEC1] flex justify-between items-center">
             <span class="font-serif text-lg font-bold tracking-widest text-[#4E4638]">SecondMarket</span>
-            <button onclick="app.toggleMobileMenu()" class="text-[#776B56] hover:text-[#4E4638]">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
+            <button type="button" onclick="app.toggleMobileMenu()" class="text-[#776B56] hover:text-[#4E4638] min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-full hover:bg-[#D7CEC1]/20" aria-label="Close navigation menu">
+                <svg class="w-6 h-6" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
         <div class="p-6 space-y-6 flex-grow overflow-y-auto">
-            <nav class="space-y-4 text-sm font-semibold tracking-wider text-[#4E4638] uppercase">
-                <a href="#" onclick="app.navigate('home'); app.toggleMobileMenu(); return false;" class="block py-2 border-b border-[#D7CEC1]/50">Home</a>
-                <a href="#" onclick="app.navigate('shop'); app.toggleMobileMenu(); return false;" class="block py-2 border-b border-[#D7CEC1]/50">Full Catalog</a>
-                <a href="#" onclick="app.navigate('shop', {category: 'electronics'}); app.toggleMobileMenu(); return false;" class="block py-2 border-b border-[#D7CEC1]/50">Electronics</a>
-                <a href="#" onclick="app.navigate('shop', {category: 'fashion'}); app.toggleMobileMenu(); return false;" class="block py-2 border-b border-[#D7CEC1]/50">Fashion</a>
-                <a href="#" onclick="app.navigate('shop', {category: 'books'}); app.toggleMobileMenu(); return false;" class="block py-2 border-b border-[#D7CEC1]/50">Books</a>
-                <a href="#" onclick="app.navigate('shop', {category: 'furniture'}); app.toggleMobileMenu(); return false;" class="block py-2 border-b border-[#D7CEC1]/50">Furniture</a>
+            <nav class="space-y-1 text-sm font-semibold tracking-wider text-[#4E4638] uppercase" aria-label="Mobile menu">
+                <a href="#" onclick="app.navigate('home'); app.toggleMobileMenu(); return false;" class="flex items-center min-h-[44px] py-2 border-b border-[#D7CEC1]/50">Home</a>
+                <a href="#" onclick="app.navigate('shop'); app.toggleMobileMenu(); return false;" class="flex items-center min-h-[44px] py-2 border-b border-[#D7CEC1]/50">Full Catalog</a>
+                <a href="#" onclick="app.navigate('shop', {category: 'electronics'}); app.toggleMobileMenu(); return false;" class="flex items-center min-h-[44px] py-2 border-b border-[#D7CEC1]/50">Electronics</a>
+                <a href="#" onclick="app.navigate('shop', {category: 'fashion'}); app.toggleMobileMenu(); return false;" class="flex items-center min-h-[44px] py-2 border-b border-[#D7CEC1]/50">Fashion</a>
+                <a href="#" onclick="app.navigate('shop', {category: 'books'}); app.toggleMobileMenu(); return false;" class="flex items-center min-h-[44px] py-2 border-b border-[#D7CEC1]/50">Books</a>
+                <a href="#" onclick="app.navigate('shop', {category: 'furniture'}); app.toggleMobileMenu(); return false;" class="flex items-center min-h-[44px] py-2 border-b border-[#D7CEC1]/50">Furniture</a>
+                <a href="#" onclick="app.navigate('about'); app.toggleMobileMenu(); return false;" class="flex items-center min-h-[44px] py-2 border-b border-[#D7CEC1]/50">About</a>
             </nav>
-            <div class="pt-6 space-y-3">
-                <button onclick="app.state.user ? app.navigate('account') : window.location.href='/login.html'; app.toggleMobileMenu();" class="w-full btn-outline text-xs">Customer Portal</button>
-                <button onclick="app.navigate('wishlist'); app.toggleMobileMenu();" class="w-full btn-secondary text-xs">Wishlist Items</button>
+            <div id="mobile-auth-section" class="pt-6 space-y-3">
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="/login.html" onclick="window.location.href='/login.html'" class="w-full block text-center btn-primary text-xs uppercase tracking-wider py-2.5 min-h-[44px] flex items-center justify-center">Log in</a>
+                    <a href="/register.html" class="w-full block text-center btn-outline text-xs uppercase tracking-wider py-2.5 min-h-[44px] flex items-center justify-center">Sign up</a>
+                </div>
+                <button type="button" onclick="app.navigate('wishlist'); app.toggleMobileMenu();" class="w-full btn-secondary text-xs py-2.5 min-h-[44px]">Wishlist Items</button>
             </div>
         </div>
     </div>
-    <div id="mobile-menu-backdrop" class="fixed inset-0 bg-[#4E4638]/50 z-40 hidden" onclick="app.toggleMobileMenu()"></div>
+    <div id="mobile-menu-backdrop" aria-hidden="true" class="fixed inset-0 bg-[#4E4638]/50 z-40 hidden" onclick="app.toggleMobileMenu()"></div>
 
     <!-- MAIN APP VIEW ROUTER CONTAINER -->
     <main id="main-content" class="flex-grow fade-in min-h-[70vh]">
@@ -214,55 +186,609 @@
     </main>
 
     <!-- TOAST NOTIFICATION CONTAINER -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-3 max-w-sm w-full pointer-events-none"></div>
+    <div id="toast-container" class="fixed bottom-6 left-6 z-50 space-y-3 max-w-sm w-full pointer-events-none"></div>
 
     <!-- GLOBAL FOOTER -->
     <footer class="bg-[#4E4638] text-[#D7CEC1] mt-24 border-t border-[#776B56]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
             <!-- Brand Info Column -->
             <div class="lg:col-span-2 space-y-4">
-                <a href="#" class="text-2xl font-serif tracking-widest text-white uppercase font-bold">SecondMarket</a>
-                <p class="text-sm text-[#B9A995] font-light max-w-sm leading-relaxed">
+                <a href="#" onclick="app.navigate('home'); return false;" class="text-2xl font-serif tracking-widest text-white uppercase font-bold inline-flex items-center min-h-[44px]">SecondMarket</a>
+                <p class="text-sm text-[#D7CEC1] font-light max-w-sm leading-relaxed">
                     A curated secondhand marketplace for pre-loved furniture, fashion, electronics, books, and everyday finds.
                 </p>
-                <div class="pt-2 flex items-center gap-4 text-xs text-[#B9A995]">
+                <div class="pt-2 flex items-center gap-4 text-xs text-[#D7CEC1]">
                     <span>&copy; 2026 SecondMarket. All rights reserved.</span>
                 </div>
             </div>
 
             <!-- Links Column 1 -->
             <div>
-                <h4 class="text-xs uppercase tracking-widest text-white font-semibold mb-4">Collections</h4>
-                <ul class="space-y-2.5 text-xs text-[#B9A995]">
-                    <li><a href="#" onclick="app.navigate('shop', {category: 'electronics'}); return false;" class="hover:text-white transition">Electronics</a></li>
-                    <li><a href="#" onclick="app.navigate('shop', {category: 'fashion'}); return false;" class="hover:text-white transition">Fashion</a></li>
-                    <li><a href="#" onclick="app.navigate('shop', {category: 'books'}); return false;" class="hover:text-white transition">Books</a></li>
-                    <li><a href="#" onclick="app.navigate('shop', {category: 'furniture'}); return false;" class="hover:text-white transition">Furniture</a></li>
+                <h2 class="text-xs uppercase tracking-widest text-white font-semibold mb-4">Collections</h2>
+                <ul class="space-y-1.5 text-xs text-[#D7CEC1]">
+                    <li><a href="#" onclick="app.navigate('shop', {category: 'electronics'}); return false;" class="hover:text-white transition inline-flex items-center min-h-[44px] sm:min-h-0 sm:py-1">Electronics</a></li>
+                    <li><a href="#" onclick="app.navigate('shop', {category: 'fashion'}); return false;" class="hover:text-white transition inline-flex items-center min-h-[44px] sm:min-h-0 sm:py-1">Fashion</a></li>
+                    <li><a href="#" onclick="app.navigate('shop', {category: 'books'}); return false;" class="hover:text-white transition inline-flex items-center min-h-[44px] sm:min-h-0 sm:py-1">Books</a></li>
+                    <li><a href="#" onclick="app.navigate('shop', {category: 'furniture'}); return false;" class="hover:text-white transition inline-flex items-center min-h-[44px] sm:min-h-0 sm:py-1">Furniture</a></li>
                 </ul>
             </div>
 
             <!-- Links Column 2 -->
             <div>
-                <h4 class="text-xs uppercase tracking-widest text-white font-semibold mb-4">Client Care</h4>
-                <ul class="space-y-2.5 text-xs text-[#B9A995]">
-                    <li><a href="#" onclick="app.showToast('Shipping details are confirmed during checkout.', 'info'); return false;" class="hover:text-white transition">Shipping Guide</a></li>
-                    <li><a href="#" onclick="app.showToast('Return rules depend on the listed item condition.', 'info'); return false;" class="hover:text-white transition">Returns & Item Condition</a></li>
-                    <li><a href="#" onclick="app.navigate('account'); return false;" class="hover:text-white transition">Order Tracking Portal</a></li>
-                    <li><a href="#" onclick="app.showToast('Message support will be added in a later module.', 'info'); return false;" class="hover:text-white transition">Buyer Support</a></li>
+                <h2 class="text-xs uppercase tracking-widest text-white font-semibold mb-4">Client Care</h2>
+                <ul class="space-y-1.5 text-xs text-[#D7CEC1]">
+                    <li><a href="#" onclick="app.navigate('about'); return false;" class="hover:text-white transition inline-flex items-center min-h-[44px] sm:min-h-0 sm:py-1">About SecondMarket &amp; Team</a></li>
+                    <li><a href="#" onclick="app.openInfoModal('shipping'); return false;" class="hover:text-white transition inline-flex items-center min-h-[44px] sm:min-h-0 sm:py-1">Shipping Guide</a></li>
+                    <li><a href="#" onclick="app.openInfoModal('returns'); return false;" class="hover:text-white transition inline-flex items-center min-h-[44px] sm:min-h-0 sm:py-1">Returns &amp; Item Condition</a></li>
+                    <li><a href="/orders" class="hover:text-white transition inline-flex items-center min-h-[44px] sm:min-h-0 sm:py-1">Order Tracking Portal</a></li>
+                    <li><a href="#" onclick="app.openInfoModal('support'); return false;" class="hover:text-white transition inline-flex items-center min-h-[44px] sm:min-h-0 sm:py-1">Buyer Support</a></li>
                 </ul>
             </div>
 
             <!-- Newsletter Signup -->
             <div>
-                <h4 class="text-xs uppercase tracking-widest text-white font-semibold mb-4">Marketplace Updates</h4>
-                <p class="text-xs text-[#B9A995] mb-3">Subscribe for new secondhand listings and buyer updates.</p>
+                <h2 class="text-xs uppercase tracking-widest text-white font-semibold mb-4">Marketplace Updates</h2>
+                <p class="text-xs text-[#D7CEC1] mb-3">Subscribe for new secondhand listings and buyer updates.</p>
                 <form onsubmit="app.handleNewsletter(event)" class="space-y-2">
-                    <input type="email" required placeholder="Enter your email" class="w-full px-3 py-2 bg-[#776B56]/30 border border-[#776B56] text-xs text-white placeholder-[#B9A995] rounded focus:outline-none focus:border-[#9A8B74]">
-                    <button type="submit" class="w-full bg-[#9A8B74] hover:bg-[#B9A995] hover:text-[#4E4638] text-white text-xs py-2 rounded font-medium transition">Subscribe</button>
+                    <input type="email" required aria-label="Email address for marketplace updates" placeholder="Enter your email" class="w-full min-h-[44px] px-3 py-2 bg-[#776B56]/30 border border-[#B9A995]/60 text-xs text-white placeholder-[#D7CEC1] rounded focus:outline-none focus:border-[#FAF8F5]">
+                    <button type="submit" class="w-full min-h-[44px] bg-[#D7CEC1] hover:bg-white text-[#4E4638] text-xs py-2 rounded font-semibold transition">Subscribe</button>
                 </form>
             </div>
         </div>
     </footer>
+
+    <!-- Native HTML5 Templates (Zero-latency in-DOM template declarations) -->
+    <!-- Native Template: home -->
+    <template id="template-home">
+    <!-- HERO SECTION -->
+    <section class="marketplace-home-hero relative bg-[#3E372B] text-white overflow-hidden">
+        <div class="home-hero-media" id="home-hero-media" aria-hidden="true">
+            <picture class="home-hero-slide is-active" data-hero-slide="0">
+                <source srcset="/static/images/hero-furniture-editorial.webp" type="image/webp">
+                <img src="/static/images/hero-furniture-editorial.jpg"
+                     class="home-hero-image"
+                     alt=""
+                     fetchpriority="high"
+                     decoding="async"
+                     onerror="this.onerror=null; const pic=this.closest('picture'); if(pic) pic.querySelectorAll('source').forEach((s)=>s.remove()); this.src='/static/productImages/bags/young-girl-with-gray-student-backpack.jpg';">
+            </picture>
+            <picture class="home-hero-slide" data-hero-slide="1">
+                <source srcset="/static/images/hero-furniture-dining.webp" type="image/webp">
+                <img src="/static/images/hero-furniture-dining.jpg"
+                     class="home-hero-image"
+                     alt=""
+                     decoding="async"
+                     onerror="this.onerror=null; const pic=this.closest('picture'); if(pic) pic.querySelectorAll('source').forEach((s)=>s.remove()); this.src='/static/images/hero-furniture-editorial.jpg';">
+            </picture>
+            <picture class="home-hero-slide" data-hero-slide="2">
+                <source srcset="/static/images/hero-tech-devices.webp" type="image/webp">
+                <img src="/static/images/hero-tech-devices.jpg"
+                     class="home-hero-image"
+                     alt=""
+                     decoding="async"
+                     onerror="this.onerror=null; const pic=this.closest('picture'); if(pic) pic.querySelectorAll('source').forEach((s)=>s.remove()); this.src='/static/images/hero-furniture-editorial.jpg';">
+            </picture>
+            <picture class="home-hero-slide" data-hero-slide="3">
+                <source srcset="/static/images/hero-smartphones.webp" type="image/webp">
+                <img src="/static/images/hero-smartphones.jpg"
+                     class="home-hero-image"
+                     alt=""
+                     decoding="async"
+                     onerror="this.onerror=null; const pic=this.closest('picture'); if(pic) pic.querySelectorAll('source').forEach((s)=>s.remove()); this.src='/static/images/hero-furniture-editorial.jpg';">
+            </picture>
+        </div>
+        <div class="home-hero-overlay" aria-hidden="true"></div>
+        <div class="marketplace-home-hero-content relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="home-hero-copy">
+                <p class="home-hero-eyebrow">Curated Secondhand Living</p>
+                <h1 class="marketplace-home-title font-serif font-light text-white">
+                    Find Furniture That Feels <em class="home-hero-accent">Like Home.</em>
+                </h1>
+                <p class="home-hero-subtitle">
+                    Discover inspected pre-owned sofas, solid wood pieces, electronics, and wardrobe essentials thoughtfully graded for their next chapter.
+                </p>
+
+                <!-- Hero Primary & Secondary Actions -->
+                <div class="marketplace-home-actions">
+                    <button type="button" onclick="app.navigate('shop')" class="btn-hero-primary">
+                        <span>Shop Collection</span>
+                        <span aria-hidden="true">&rarr;</span>
+                    </button>
+                    <button type="button" onclick="document.getElementById('home-categories-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })" class="btn-hero-outline">
+                        Explore Categories
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LIVE MARKETPLACE VALUE & TRUST BAR -->
+    <section class="home-trust-strip" aria-label="Marketplace highlights">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <button type="button" onclick="app.navigate('shop')" class="home-trust-item text-left w-full cursor-pointer">
+                <div class="home-trust-icon" aria-hidden="true">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-wider text-[#4E4638]">{{availableCount}} Available Finds</p>
+                    <p class="text-xs text-[#776B56]">In-stock &amp; ready for checkout</p>
+                </div>
+            </button>
+            <button type="button" onclick="app.quickShopFilter({condition: 'like_new'})" class="home-trust-item text-left w-full cursor-pointer">
+                <div class="home-trust-icon" aria-hidden="true">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-wider text-[#4E4638]">Condition Graded</p>
+                    <p class="text-xs text-[#776B56]">Inspected by Admin Seller</p>
+                </div>
+            </button>
+            <button type="button" onclick="app.navigate('shop')" class="home-trust-item text-left w-full cursor-pointer">
+                <div class="home-trust-icon" aria-hidden="true">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                </div>
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-wider text-[#4E4638]">{{activeCategoryCount}} Active Collections</p>
+                    <p class="text-xs text-[#776B56]">Curated secondhand categories</p>
+                </div>
+            </button>
+            <a href="/orders" class="home-trust-item text-left w-full cursor-pointer">
+                <div class="home-trust-icon" aria-hidden="true">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                </div>
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-wider text-[#4E4638]">Tracked Delivery</p>
+                    <p class="text-xs text-[#776B56]">Live order &amp; return portal</p>
+                </div>
+            </a>
+        </div>
+    </section>
+    
+    <section id="home-categories-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
+            <div>
+                <p class="text-xs uppercase tracking-widest text-[#6E614D] font-bold">Curated Departments</p>
+                <h2 class="font-serif text-2xl sm:text-3xl text-[#4E4638] mt-1">Browse By Category</h2>
+            </div>
+            <a href="#" onclick="app.navigate('shop'); return false;" class="text-xs uppercase tracking-widest text-[#4E4638] hover:text-[#6E614D] font-bold inline-flex items-center gap-1.5 min-h-[44px] sm:min-h-0">
+                <span>View All Categories</span>
+                <span aria-hidden="true">&rarr;</span>
+            </a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {{categoryTiles}}
+        </div>
+    </section>
+    
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="text-center max-w-2xl mx-auto mb-8">
+            <span class="text-xs uppercase tracking-widest text-[#6E614D] font-bold">Available Now</span>
+            <h2 class="font-serif text-3xl text-[#4E4638] mt-1">Featured Secondhand Finds</h2>
+            <p class="text-xs text-[#776B56] mt-2">Filter featured items below or click any listing to inspect photos, condition, and specs.</p>
+        </div>
+        {{featuredFilterTabs}}
+        {{featuredStatus}}
+        {{featuredProducts}}
+    </section>
+    
+    <section class="bg-[#D7CEC1]/30 my-10 py-16 border-y border-[#B9A995]/50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+            <div class="max-w-4xl mx-auto text-center space-y-4">
+                <span class="text-xs uppercase tracking-widest text-[#776B56] font-bold">Secondhand Promise</span>
+                <h2 class="font-serif text-2xl sm:text-4xl text-[#4E4638] leading-snug">
+                    "Every listed item should be clear, reusable, fairly priced, and easy for buyers to evaluate before checkout."
+                </h2>
+                <p class="text-xs uppercase tracking-widest text-[#6E614D] font-semibold">- SecondMarket Admin Seller</p>
+                <div class="pt-1">
+                    <a href="#" onclick="app.navigate('about'); return false;" class="inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-semibold uppercase tracking-widest text-[#4E4638] hover:text-[#6E614D] underline underline-offset-4 transition">
+                        About SecondMarket &amp; The Engineering Team &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                <button type="button" onclick="app.quickShopFilter({condition: 'like_new'})" class="home-promise-card text-left w-full">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="badge badge-new">Like New</span>
+                        <span class="text-xs font-semibold text-[#6E614D]">Browse Grade &rarr;</span>
+                    </div>
+                    <h3 class="font-serif text-lg font-semibold text-[#4E4638]">Minimal to No Wear</h3>
+                    <p class="text-xs text-[#776B56] mt-1 leading-relaxed">Clean, fully functional items in near-original condition ready for immediate use.</p>
+                </button>
+                <button type="button" onclick="app.quickShopFilter({condition: 'good'})" class="home-promise-card text-left w-full">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="badge badge-condition">Good Condition</span>
+                        <span class="text-xs font-semibold text-[#6E614D]">Browse Grade &rarr;</span>
+                    </div>
+                    <h3 class="font-serif text-lg font-semibold text-[#4E4638]">Well-Cared Pre-Loved</h3>
+                    <p class="text-xs text-[#776B56] mt-1 leading-relaxed">Gently used pieces with minor cosmetic signs of use and verified functionality.</p>
+                </button>
+                <button type="button" onclick="app.quickShopFilter({condition: 'fair'})" class="home-promise-card text-left w-full">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="badge badge-condition">Fair Value</span>
+                        <span class="text-xs font-semibold text-[#6E614D]">Browse Grade &rarr;</span>
+                    </div>
+                    <h3 class="font-serif text-lg font-semibold text-[#4E4638]">Practical &amp; Budget-Friendly</h3>
+                    <p class="text-xs text-[#776B56] mt-1 leading-relaxed">Honest everyday finds priced for maximum value with clear condition notes.</p>
+                </button>
+            </div>
+        </div>
+    </section>
+    </template>
+
+    <!-- Native Template: catalog -->
+    <template id="template-catalog">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <nav class="text-xs text-[#776B56] mb-6 flex items-center gap-2" aria-label="Breadcrumb">
+            <a href="#" onclick="app.navigate('home'); return false;" class="hover:underline inline-flex items-center min-h-[44px] sm:min-h-0">Home</a>
+            <span aria-hidden="true">/</span>
+            <span class="text-[#4E4638] font-semibold">Catalog</span>
+        </nav>
+    
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 pb-6 border-b border-[#D7CEC1]">
+            <div>
+                <h1 class="font-serif text-3xl sm:text-4xl text-[#4E4638]">{{categoryName}}</h1>
+                <p class="text-xs text-[#776B56] mt-1.5">{{productCountLabel}}</p>
+            </div>
+            <div class="mt-4 md:mt-0 flex flex-wrap items-center gap-3 w-full md:w-auto flex-shrink-0">
+                <label for="catalog-sort-select" class="text-xs uppercase tracking-wider text-[#776B56] font-semibold whitespace-nowrap">Sort By:</label>
+                <select id="catalog-sort-select" onchange="app.applyMarketplaceFilters({sortBy: this.value})" class="form-input py-1.5 text-xs w-full sm:w-44 min-h-[44px] sm:min-h-0">
+                    {{sortOptions}}
+                </select>
+            </div>
+        </div>
+    
+        <form onsubmit="app.applyCatalogSearch(event)" class="mb-8 flex flex-col sm:flex-row gap-3 items-stretch">
+            <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#776B56]">
+                    <svg class="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <input name="q" type="search" value="{{searchQuery}}" placeholder="Search title, brand, material, or description..." class="form-input pl-10 h-11 text-sm" aria-label="Search catalog">
+            </div>
+            <button type="submit" class="btn-primary h-11 min-h-[44px] px-6 text-xs uppercase tracking-widest whitespace-nowrap">Search</button>
+            {{clearSearchButton}}
+        </form>
+    
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+            <aside class="marketplace-filter-panel bg-white p-5 rounded-lg border border-[#D7CEC1]/70 shadow-subtle space-y-5" aria-label="Catalog filters">
+                <div>
+                    <h2 class="text-xs uppercase tracking-widest text-[#4E4638] font-bold mb-3">Category</h2>
+                    <ul class="marketplace-category-list space-y-1 text-xs">
+                        {{categoryOptions}}
+                    </ul>
+                </div>
+    
+                <div class="pt-4 border-t border-[#D7CEC1]/50">
+                    <label for="catalog-max-price-range" class="block text-xs uppercase tracking-widest text-[#4E4638] font-bold mb-3">Maximum Price</label>
+                    <input id="catalog-max-price-range" type="range" min="0" max="{{catalogMaxPrice}}" step="500" value="{{priceMax}}" onchange="app.applyMarketplaceFilters({priceMax: parseInt(this.value, 10) >= {{catalogMaxPrice}} ? null : parseInt(this.value, 10)})" class="w-full min-h-[44px] sm:min-h-0 accent-[#6E614D]">
+                    <div class="flex justify-between text-xs text-[#776B56] mt-1.5">
+                        <span>{{priceMinLabel}}</span>
+                        <span class="font-bold text-[#4E4638]">{{priceMaxLabel}}</span>
+                    </div>
+                </div>
+    
+                <div class="pt-4 border-t border-[#D7CEC1]/50">
+                    <label for="condition-filter" class="block text-xs uppercase tracking-widest text-[#4E4638] font-bold mb-3">Condition</label>
+                    <select id="condition-filter" onchange="app.applyMarketplaceFilters({condition: this.value})" class="form-input py-2 text-xs min-h-[44px] sm:min-h-0">
+                        {{conditionOptions}}
+                    </select>
+                </div>
+    
+                <div class="pt-2">
+                    <button type="button" onclick="app.resetMarketplaceFilters()" class="btn-outline w-full text-xs py-2.5 min-h-[44px]">Reset Filters</button>
+                </div>
+            </aside>
+    
+            <div class="lg:col-span-3">
+                {{catalogStatus}}
+                {{emptyState}}
+                {{productGrid}}
+            </div>
+        </div>
+    </div>
+    </template>
+
+    <!-- Native Template: product-detail -->
+    <template id="template-product-detail">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <nav class="text-xs text-[#776B56] mb-8 flex flex-wrap items-center gap-2" aria-label="Breadcrumb">
+            <a href="#" onclick="app.navigate('home'); return false;" class="hover:underline inline-flex items-center min-h-[44px] sm:min-h-0">Home</a>
+            <span aria-hidden="true">/</span>
+            <a href="#" onclick="app.navigate('shop', {category: '{{categorySlug}}'}); return false;" class="hover:underline inline-flex items-center min-h-[44px] sm:min-h-0">{{categoryName}}</a>
+            <span aria-hidden="true">/</span>
+            <span class="text-[#4E4638] font-semibold">{{title}}</span>
+        </nav>
+    
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div class="space-y-4">
+                <div class="aspect-4/3 rounded overflow-hidden bg-white border border-[#D7CEC1]">
+                    <img src="{{activeImage}}" class="w-full h-full object-cover" alt="{{title}}">
+                </div>
+                <div class="flex gap-3 overflow-x-auto pb-2">
+                    {{galleryButtons}}
+                </div>
+            </div>
+    
+            <div class="space-y-6">
+                <div>
+                    <p class="text-xs uppercase tracking-widest text-[#776B56] font-bold">{{categoryName}}</p>
+                    <h1 class="font-serif text-3xl font-semibold text-[#4E4638] mt-1">{{title}}</h1>
+                    <div class="flex flex-wrap items-center gap-3 mt-3">
+                        <span class="text-2xl font-bold text-[#4E4638]">{{price}}</span>
+                        {{availabilityBadgeMarkup}}
+                        <span class="text-xs text-[#776B56]">{{conditionLabel}} &bull; {{quantity}} available</span>
+                    </div>
+                    <div class="flex items-center gap-2 mt-2.5">
+                        <span class="text-xs font-semibold text-[#6E614D]">{{ratingDisplay}}</span>
+                        <a href="#pdp-reviews-section" class="text-xs text-[#776B56] hover:underline inline-flex items-center min-h-[44px] sm:min-h-0">({{reviewsCountLabel}})</a>
+                    </div>
+                </div>
+    
+                <p class="text-sm text-[#776B56] leading-relaxed">{{description}}</p>
+    
+                <div>
+                    <p class="block text-xs uppercase tracking-wider text-[#4E4638] font-bold mb-2">Color Variant: <span class="text-[#776B56] font-normal">{{selectedColor}}</span></p>
+                    <div class="flex flex-wrap gap-2">{{colorButtons}}</div>
+                </div>
+    
+                <div>
+                    <p class="block text-xs uppercase tracking-wider text-[#4E4638] font-bold mb-2">Size / Dimensions: <span class="text-[#776B56] font-normal">{{selectedSize}}</span></p>
+                    <div class="flex flex-wrap gap-2">{{sizeButtons}}</div>
+                </div>
+    
+                <div class="pt-4 flex flex-wrap sm:flex-nowrap items-center gap-4 border-t border-[#D7CEC1]">
+                    <div class="flex items-center border border-[#D7CEC1] rounded bg-white">
+                        <button type="button" onclick="app.state.pdpQty = Math.max(1, (app.state.pdpQty||1)-1); app.render();" class="px-3 py-2 min-w-[44px] min-h-[44px] text-[#776B56] hover:text-[#4E4638] inline-flex items-center justify-center" aria-label="Decrease quantity">-</button>
+                        <span class="px-4 text-xs font-semibold">{{quantitySelected}}</span>
+                        <button type="button" onclick="app.state.pdpQty = (app.state.pdpQty||1)+1; app.render();" class="px-3 py-2 min-w-[44px] min-h-[44px] text-[#776B56] hover:text-[#4E4638] inline-flex items-center justify-center" aria-label="Increase quantity">+</button>
+                    </div>
+                    <button type="button" onclick="app.addToCart('{{productId}}', '{{selectedColor}}', '{{selectedSize}}', '{{quantitySelected}}') " class="btn-primary flex-1 py-3 min-h-[44px] text-xs uppercase tracking-widest">
+                        Add To Bag - {{lineTotal}}
+                    </button>
+                </div>
+    
+                <div class="border-t border-[#D7CEC1] pt-4 space-y-2 text-xs">
+                    <div class="p-3 bg-[#FAF8F5] rounded border border-[#D7CEC1]/50 space-y-1">
+                        <p class="font-bold text-[#4E4638]">Material &amp; Brand</p>
+                        <p class="text-[#776B56]">{{material}} | {{brand}}</p>
+                    </div>
+                    <div class="p-3 bg-[#FAF8F5] rounded border border-[#D7CEC1]/50 space-y-1">
+                        <p class="font-bold text-[#4E4638]">Dimensions &amp; Seller</p>
+                        <p class="text-[#776B56]">{{dimensions}} | {{sellerName}}</p>
+                    </div>
+                    <div class="pt-2 flex flex-wrap justify-between items-center gap-2 text-xs text-[#6E614D]">
+                        <span>Verified SecondMarket Listing</span>
+                        <button type="button" onclick="app.openReportModal('{{productId}}')" class="hover:text-[#4E4638] underline flex items-center gap-1 min-h-[44px] sm:min-h-0">
+                            <span aria-hidden="true">⚐</span> Report this listing
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- REVIEWS & RATINGS SECTION -->
+        <section id="pdp-reviews-section" class="mt-16 pt-10 border-t border-[#D7CEC1]" aria-label="Customer reviews">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                <div>
+                    <p class="text-xs uppercase tracking-widest text-[#776B56] font-bold">Verified Buyer Feedback</p>
+                    <h2 class="font-serif text-2xl font-semibold text-[#4E4638] mt-1">Customer Reviews</h2>
+                    <div class="flex items-center gap-3 mt-2">
+                        <span class="text-2xl font-bold text-[#4E4638]">{{averageRatingScore}}</span>
+                        <span class="text-sm text-[#6E614D]">{{ratingStars}}</span>
+                        <span class="text-xs text-[#776B56]">({{reviewsCountLabel}})</span>
+                    </div>
+                </div>
+                <div>
+                    {{reviewActionContainer}}
+                </div>
+            </div>
+    
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="p-6 bg-[#FAF8F5] rounded border border-[#D7CEC1] space-y-3 h-fit">
+                    <h3 class="text-xs uppercase tracking-widest text-[#4E4638] font-bold">Rating Breakdown</h3>
+                    {{ratingBreakdownBars}}
+                </div>
+    
+                <div class="lg:col-span-2 space-y-4">
+                    {{reviewsList}}
+                </div>
+            </div>
+        </section>
+    
+        <!-- REPORT LISTING MODAL -->
+        {{reportModalMarkup}}
+    
+        <!-- WRITE REVIEW MODAL -->
+        {{reviewModalMarkup}}
+    </div>
+    </template>
+
+    <!-- Native Template: wishlist -->
+    <template id="template-wishlist">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <h1 class="font-serif text-3xl font-semibold text-[#4E4638] mb-8">Saved Wishlist Items</h1>
+        {{wishlistStatus}}
+        {{emptyState}}
+        <h2 class="sr-only">Saved Products</h2>
+        {{wishlistGrid}}
+    </div>
+    </template>
+
+    <!-- Native Template: about -->
+    <template id="template-about">
+    <div class="about-page max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 fade-in">
+        <div class="about-top-group">
+            <nav class="about-breadcrumb text-xs text-[#776B56] flex items-center gap-2" aria-label="Breadcrumb">
+                <a href="#" onclick="app.navigate('home'); return false;" class="hover:underline inline-flex items-center min-h-[44px] sm:min-h-0">Home</a>
+                <span aria-hidden="true">/</span>
+                <span class="text-[#4E4638] font-semibold">About SecondMarket</span>
+            </nav>
+
+            <!-- Modern Split Editorial About Hero -->
+            <section class="about-hero" aria-labelledby="about-page-title">
+                <div class="about-hero-grid">
+                    <div class="about-hero-content">
+                        <span class="about-eyebrow-pill">
+                            <span class="about-eyebrow-dot" aria-hidden="true"></span>
+                            System Overview &amp; Engineering Team
+                        </span>
+                        <h1 id="about-page-title" class="about-title font-serif">Curated Secondhand Commerce, Engineered for Trust.</h1>
+                        <p class="about-lead">
+                            SecondMarket unites a curated buyer marketplace with an integrated admin seller workspace. Every listing pairs transparent condition grading and atomic stock control with verified payments and end-to-end order tracking.
+                        </p>
+                        <div class="about-hero-actions">
+                            <button type="button" onclick="app.navigate('shop')" class="btn-primary text-xs uppercase tracking-widest">
+                                Explore Catalog &rarr;
+                            </button>
+                            <a href="#about-developers" class="btn-outline text-xs uppercase tracking-widest inline-flex items-center justify-center">
+                                Meet the Developers
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="about-metrics-grid" aria-label="Platform highlights">
+                        <div class="about-metric-card">
+                            <span class="about-metric-label">Platform Build</span>
+                            <strong class="about-metric-value font-serif">{{appVersionLabel}}</strong>
+                            <span class="about-metric-note">{{apiVersionLabel}}</span>
+                        </div>
+                        <div class="about-metric-card">
+                            <span class="about-metric-label">Live Inventory</span>
+                            <strong class="about-metric-value font-serif">{{liveListingLabel}}</strong>
+                            <span class="about-metric-note">{{categoryCountLabel}}</span>
+                        </div>
+                        <div class="about-metric-card">
+                            <span class="about-metric-label">System Roles</span>
+                            <strong class="about-metric-value font-serif">Dual Role</strong>
+                            <span class="about-metric-note">Buyer &amp; Admin Seller</span>
+                        </div>
+                        <div class="about-metric-card">
+                            <span class="about-metric-label">Engineering Team</span>
+                            <strong class="about-metric-value font-serif">4 Builders</strong>
+                            <span class="about-metric-note">14 Core Modules</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- System Information & Architecture -->
+        <section class="about-section" aria-labelledby="about-system-heading">
+            <div class="about-section-header">
+                <span class="about-eyebrow">System Information</span>
+                <h2 id="about-system-heading" class="about-section-title font-serif">Architecture &amp; Core Capabilities</h2>
+                <p class="about-section-subtitle">Designed to connect secondhand product curation, inventory integrity, checkout processing, and seller analytics in one cohesive platform.</p>
+            </div>
+
+            <div class="about-system-grid">
+                <article class="about-panel">
+                    <header class="about-panel-header">
+                        <div>
+                            <span class="about-panel-kicker">End-to-End Experience</span>
+                            <h3 class="about-panel-title font-serif">Platform Mission &amp; Workflow</h3>
+                        </div>
+                        <span class="about-panel-badge">Storefront + Admin</span>
+                    </header>
+                    <p class="about-panel-copy">
+                        Unlike informal classifieds, SecondMarket validates every stage of a pre-loved purchase—from condition verification and search discovery to stock-safe checkout and shipment tracking.
+                    </p>
+                    <ul class="about-highlights-list">
+                        <li class="about-highlight-card">
+                            <span class="about-highlight-index" aria-hidden="true">01</span>
+                            <div>
+                                <strong class="about-highlight-heading">Transparent Item Grading</strong>
+                                <p class="about-highlight-text">Clear condition tiers (Like New, Good Condition, Fair Value) paired with gallery imagery and seller specs.</p>
+                            </div>
+                        </li>
+                        <li class="about-highlight-card">
+                            <span class="about-highlight-index" aria-hidden="true">02</span>
+                            <div>
+                                <strong class="about-highlight-heading">Synchronized Buyer Journey</strong>
+                                <p class="about-highlight-text">Persistent wishlists, server-backed carts, multi-channel payments (COD &amp; GCash/E-Wallet), and live order tracking.</p>
+                            </div>
+                        </li>
+                        <li class="about-highlight-card">
+                            <span class="about-highlight-index" aria-hidden="true">03</span>
+                            <div>
+                                <strong class="about-highlight-heading">Dedicated Admin Seller Console</strong>
+                                <p class="about-highlight-text">Real-time KPI analytics, category and listing lifecycles, inventory protection, fulfillment updates, and CSV exports.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </article>
+
+                <article class="about-panel">
+                    <header class="about-panel-header">
+                        <div>
+                            <span class="about-panel-kicker">Technology Foundation</span>
+                            <h3 class="about-panel-title font-serif">Technical Stack &amp; Specifications</h3>
+                        </div>
+                        <span class="about-panel-badge">{{apiVersionLabel}}</span>
+                    </header>
+                    <p class="about-panel-copy">
+                        Engineered on a clean layered architecture separating REST API blueprints, relational database constraints, and modular client-side views.
+                    </p>
+                    <dl class="about-spec-list">
+                        <div class="about-spec-row">
+                            <dt>Application</dt>
+                            <dd>{{appName}} ({{appVersionLabel}})</dd>
+                        </div>
+                        <div class="about-spec-row">
+                            <dt>Environment</dt>
+                            <dd>{{environmentLabel}} &bull; Active Storefront</dd>
+                        </div>
+                        <div class="about-spec-row">
+                            <dt>Backend Engine</dt>
+                            <dd>Python Flask REST API ({{apiVersionLabel}}) with modular domain services</dd>
+                        </div>
+                        <div class="about-spec-row">
+                            <dt>Database Layer</dt>
+                            <dd>PostgreSQL &amp; SQLAlchemy ORM with relational integrity</dd>
+                        </div>
+                        <div class="about-spec-row">
+                            <dt>Frontend UI</dt>
+                            <dd>Modular HTML templates, design-system CSS &amp; Vanilla ES6+ SPA views</dd>
+                        </div>
+                        <div class="about-spec-row">
+                            <dt>Security &amp; RBAC</dt>
+                            <dd>HttpOnly session cookies, role-based guards &amp; input validation</dd>
+                        </div>
+                    </dl>
+                </article>
+            </div>
+        </section>
+
+        <!-- Developers & Contributions -->
+        <section id="about-developers" class="about-section" aria-labelledby="about-team-heading">
+            <div class="about-section-header">
+                <span class="about-eyebrow">Contributors</span>
+                <h2 id="about-team-heading" class="about-section-title font-serif">Developers &amp; Contributions</h2>
+                <p class="about-section-subtitle">Each team member designed and built dedicated modules spanning the buyer storefront, REST APIs, database persistence, and admin seller console.</p>
+            </div>
+
+            <div class="about-team-grid">
+                {{developerCards}}
+            </div>
+        </section>
+
+        <!-- Closing CTA Band -->
+        <section class="about-cta-band" aria-label="Explore SecondMarket">
+            <div class="about-cta-copy">
+                <span class="about-eyebrow">Continue Browsing</span>
+                <h2 class="about-cta-title font-serif">Ready to Explore Pre-Loved Finds?</h2>
+                <p class="about-cta-subtitle">Discover inspected furniture, electronics, fashion, and everyday essentials across active categories.</p>
+            </div>
+            <div class="about-cta-actions">
+                <button type="button" onclick="app.navigate('shop')" class="btn-primary text-xs uppercase tracking-widest">
+                    Shop Full Catalog &rarr;
+                </button>
+                <button type="button" onclick="app.openInfoModal('support')" class="btn-outline text-xs uppercase tracking-widest">
+                    Buyer Support
+                </button>
+            </div>
+        </section>
+    </div>
+    </template>
 
     <script src="/static/js/auth-client.js"></script>
     <script src="/static/js/auth-views.js"></script>
@@ -273,6 +799,7 @@
     <script src="/static/js/marketplace/pages/catalog-page.js"></script>
     <script src="/static/js/marketplace/pages/product-detail-page.js"></script>
     <script src="/static/js/marketplace/pages/wishlist-page.js"></script>
+    <script src="/static/js/marketplace/pages/about-page.js"></script>
     <script src="/static/js/marketplace/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,59 @@
+:root {
+    /* TYPOGRAPHY TOKENS */
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-serif: Georgia, "Times New Roman", Times, serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+    /* BRAND COLOR PALETTE (SecondMarket Unified Design Language) */
+    --color-primary-dark: #4E4638;
+    --color-primary-hover: #3A342A;
+    --color-secondary-text: #776B56;
+    --color-accent: #9A8B74;
+    --color-accent-hover: #867761;
+    --color-soft-accent: #B9A995;
+    --color-light-bg: #D7CEC1;
+    --color-surface-light: #FAF8F5;
+    --color-surface-card: #FFFFFF;
+    --color-white: #FFFFFF;
+    --color-error: #A8423F;
+    --color-error-bg: #FDF2F2;
+    --color-error-border: #F8B4B4;
+    --color-success: #3F7A54;
+    --color-success-bg: #EDF6F1;
+    --color-success-border: #C3E6D0;
+    --color-border: #D7CEC1;
+
+    /* GEOMETRIC TOKENS */
+    --radius-xs: 2px;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-pill: 9999px;
+    --radius-full: 9999px;
+
+    /* COMPONENT SIZING */
+    --control-height: 2.625rem;
+    --control-height-sm: 2.25rem;
+
+    /* ELEVATIONS */
+    --shadow-subtle: 0 2px 8px rgba(78, 70, 56, 0.05);
+    --shadow-medium: 0 8px 24px rgba(78, 70, 56, 0.08);
+    --shadow-modal: 0 20px 48px rgba(78, 70, 56, 0.16);
+
+    /* MOTION */
+    --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.font-sans {
+    font-family: var(--font-sans);
+}
+
+.font-serif {
+    font-family: var(--font-serif);
+}
+
+.font-mono {
+    font-family: var(--font-mono);
+}
+

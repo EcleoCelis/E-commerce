@@ -1,63 +1,113 @@
+<template id="template-summary">
 <section class="checkout-section" aria-labelledby="checkout-summary-title">
     <div class="checkout-section-header">
         <div>
-            <p class="checkout-eyebrow">Checkout</p>
+            <p class="checkout-eyebrow">Step 2 of 3 &bull; Review &amp; Pay</p>
             <h1 id="checkout-summary-title">Shipping And Payment</h1>
         </div>
         <button type="button" class="checkout-secondary-button" onclick="checkoutApp.navigate('cart')">Back To Cart</button>
     </div>
 
     {{cartStatus}}
+    {{summaryAlertBanner}}
 
     <div class="checkout-layout">
-        <form id="checkout-summary-form" class="checkout-panel checkout-form" aria-label="Checkout details" onsubmit="checkoutApp.submitCheckout(event)">
+        <form id="checkout-summary-form" class="checkout-panel checkout-form" aria-label="Checkout details" onsubmit="checkoutApp.submitCheckout(event)" novalidate>
             <div class="checkout-panel-header">
                 <h2>Delivery Details</h2>
+                <a href="/profile?tab=addresses" class="checkout-secondary-link checkout-compact-link">Manage Addresses</a>
             </div>
 
+            {{savedAddressesSelector}}
+
             <label class="checkout-field">
-                <span>Recipient Name</span>
+                <span>Recipient Name <abbr title="required">*</abbr></span>
                 <input name="recipient_name" type="text" autocomplete="name" placeholder="Full name" required>
+                <span class="checkout-field-error" data-error-for="shipping_address.recipient_name"></span>
             </label>
             <label class="checkout-field">
-                <span>Phone</span>
-                <input name="phone" type="tel" autocomplete="tel" placeholder="Mobile number" required>
+                <span>Mobile Number <abbr title="required">*</abbr></span>
+                <input name="phone" type="tel" autocomplete="tel" placeholder="09XX XXX XXXX" required>
+                <span class="checkout-field-error" data-error-for="shipping_address.phone"></span>
             </label>
             <label class="checkout-field checkout-field-wide">
-                <span>Address</span>
+                <span>Street Address <abbr title="required">*</abbr></span>
                 <input name="address_line1" type="text" autocomplete="street-address" placeholder="House number, street, barangay" required>
+                <span class="checkout-field-error" data-error-for="shipping_address.address_line1"></span>
             </label>
             <label class="checkout-field checkout-field-wide">
-                <span>Address Line 2</span>
-                <input name="address_line2" type="text" placeholder="Apartment, landmark, or delivery note">
+                <span>Apartment, Landmark, or Instructions</span>
+                <input name="address_line2" type="text" placeholder="Optional unit number, landmark, or delivery note">
             </label>
             <label class="checkout-field">
-                <span>City</span>
+                <span>City / Municipality <abbr title="required">*</abbr></span>
                 <input name="city" type="text" autocomplete="address-level2" placeholder="City" required>
+                <span class="checkout-field-error" data-error-for="shipping_address.city"></span>
             </label>
             <label class="checkout-field">
-                <span>Province</span>
+                <span>Province <abbr title="required">*</abbr></span>
                 <input name="province" type="text" autocomplete="address-level1" placeholder="Province" required>
+                <span class="checkout-field-error" data-error-for="shipping_address.province"></span>
             </label>
             <label class="checkout-field">
-                <span>Postal Code</span>
+                <span>Postal Code <abbr title="required">*</abbr></span>
                 <input name="postal_code" type="text" autocomplete="postal-code" placeholder="Postal code" required>
+                <span class="checkout-field-error" data-error-for="shipping_address.postal_code"></span>
             </label>
-            <label class="checkout-field">
-                <span>Payment Method</span>
-                <select name="payment_method">
-                    <option value="cash_on_delivery">Cash On Delivery</option>
-                    <option value="gcash_pending">GCash Reference Pending</option>
-                </select>
-            </label>
+
+            {{saveAddressToggle}}
+
+            <div class="checkout-field checkout-field-wide checkout-section-divider">
+                <div class="checkout-subpanel-header">
+                    <span>Shipping Method</span>
+                </div>
+                <div class="checkout-shipping-method-box">
+                    <div>
+                        <strong>Standard Express Delivery</strong>
+                        <p>Tracked courier delivery across the Philippines. Complimentary on orders ₱3,000+.</p>
+                    </div>
+                    <strong>{{shippingLabel}}</strong>
+                </div>
+            </div>
+
+            <div class="checkout-field checkout-field-wide checkout-section-divider">
+                <div class="checkout-subpanel-header">
+                    <span>Payment Method <abbr title="required">*</abbr></span>
+                    <a href="/profile?tab=payments" class="checkout-inline-link">Payment Preferences</a>
+                </div>
+                <div class="checkout-payment-options" role="radiogroup" aria-label="Payment method">
+                    {{paymentMethodOptions}}
+                </div>
+                <span class="checkout-field-error" data-error-for="payment_method"></span>
+                {{paymentMethodHint}}
+            </div>
         </form>
 
         <aside class="checkout-summary-card" aria-label="Order summary">
-            <p class="checkout-eyebrow">Order Summary</p>
-            <strong>{{cartSubtotal}}</strong>
-            <p>{{cartTotalItems}} total item(s). Shipping is calculated by SecondMarket before confirmation.</p>
-            <button form="checkout-summary-form" type="submit" class="checkout-primary-button" {{checkoutDisabled}}>Place Order</button>
+            <p class="checkout-eyebrow">Order Review</p>
+            <div class="checkout-summary-items">
+                {{summaryItems}}
+            </div>
+            {{couponSection}}
+            <div class="checkout-summary-breakdown">
+                <div class="checkout-summary-row">
+                    <span>Subtotal ({{cartTotalItems}} item(s))</span>
+                    <strong>{{cartSubtotal}}</strong>
+                </div>
+                {{discountRow}}
+                <div class="checkout-summary-row">
+                    <span>Shipping</span>
+                    <span>{{shippingLabel}}</span>
+                </div>
+                <div class="checkout-summary-row checkout-summary-total">
+                    <span>Total Payable</span>
+                    <strong>{{orderTotal}}</strong>
+                </div>
+            </div>
+            <p class="checkout-summary-note">{{paymentNextStepNote}}</p>
+            <button id="checkout-place-order-btn" form="checkout-summary-form" type="submit" class="checkout-primary-button" {{checkoutDisabled}}>Place Order</button>
             {{confirmationPanel}}
         </aside>
     </div>
 </section>
+</template>

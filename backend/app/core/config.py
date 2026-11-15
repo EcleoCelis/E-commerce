@@ -43,6 +43,29 @@ class BaseConfig:
     DEBUG = False
     ENV_NAME = "production"
 
+    # Security Hardening (Module 11)
+    MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH", str(30 * 1024 * 1024)))  # 30 MB payload limit
+    CORS_ORIGINS = [
+        o.strip()
+        for o in (
+            os.getenv("CORS_ORIGINS")
+            or os.getenv("CORS_ALLOWED_ORIGINS")
+            or "http://localhost:5000,http://127.0.0.1:5000"
+        ).split(",")
+        if o.strip()
+    ]
+    CSRF_PROTECTION_ENABLED = os.getenv("CSRF_PROTECTION_ENABLED", "false").lower() == "true"
+    RATE_LIMITING_ENABLED = os.getenv("RATE_LIMITING_ENABLED", "true").lower() == "true"
+    UPLOAD_FOLDER = str(BASE_DIR / "frontend" / "static" / "uploads")
+    ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".svg", ".gif"}
+    MAX_IMAGE_DIMENSION = 8192
+
+    # Stripe Checkout Integration (Test Mode / Live Mode via sk_test_ / sk_live_)
+    STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "").strip()
+    STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "").strip()
+    STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "").strip()
+    APP_PUBLIC_BASE_URL = os.getenv("APP_PUBLIC_BASE_URL", "").strip()
+
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True

@@ -4,21 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register | SecondMarket</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/typography.css">
     <link rel="stylesheet" href="/static/css/auth.css">
 </head>
 <body class="auth-page">
-    <main class="auth-shell" aria-labelledby="register-title">
-        <a class="auth-brand" href="/">
-            <span class="auth-brand-mark" aria-hidden="true"></span>
-            SecondMarket
-        </a>
+    <main class="auth-shell auth-shell--wide" aria-labelledby="register-title">
+        <div class="auth-top-bar">
+            <a class="auth-brand" href="/">
+                <span class="auth-brand-mark" aria-hidden="true"></span>
+                SecondMarket
+            </a>
+            <a class="auth-back-link" href="/">&larr; Back to Storefront</a>
+        </div>
 
         <section class="auth-panel">
-            <h1 id="register-title">Create Buyer Account</h1>
-            <p style="text-align:center; margin:0 0 1.5rem;">Register as a buyer to save secondhand finds and prepare for checkout.</p>
+            <header class="auth-panel-header">
+                <span class="auth-eyebrow">New Buyer Account</span>
+                <h1 id="register-title">Create Buyer Account</h1>
+                <p class="auth-subtitle">Register as a buyer to save secondhand finds and prepare for checkout.</p>
+            </header>
 
             <div data-auth-message class="auth-message" role="status" aria-live="polite"></div>
 
@@ -26,32 +30,43 @@
                 <div class="auth-grid two-columns">
                     <div class="auth-field">
                         <label for="register-first-name">First Name</label>
-                        <input id="register-first-name" name="first_name" type="text" required autocomplete="given-name" class="form-input">
+                        <input id="register-first-name" name="first_name" type="text" required autocomplete="given-name" placeholder="Juan" class="form-input">
                     </div>
                     <div class="auth-field">
                         <label for="register-last-name">Last Name</label>
-                        <input id="register-last-name" name="last_name" type="text" required autocomplete="family-name" class="form-input">
+                        <input id="register-last-name" name="last_name" type="text" required autocomplete="family-name" placeholder="Dela Cruz" class="form-input">
                     </div>
                 </div>
                 <div class="auth-field">
-                    <label for="register-phone">Phone</label>
-                    <input id="register-phone" name="phone" type="tel" autocomplete="tel" class="form-input">
+                    <div class="auth-label-row">
+                        <label for="register-phone">Phone Number</label>
+                        <span class="auth-field-hint">Optional</span>
+                    </div>
+                    <input id="register-phone" name="phone" type="tel" autocomplete="tel" placeholder="+63 912 345 6789" class="form-input">
                 </div>
                 <div class="auth-field">
                     <label for="register-email">Email Address</label>
-                    <input id="register-email" name="email" type="email" required autocomplete="email" class="form-input">
+                    <input id="register-email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" class="form-input">
                 </div>
                 <div class="auth-field">
-                    <label for="register-password">Password</label>
-                    <input id="register-password" name="password" type="password" required autocomplete="new-password" minlength="8" class="form-input">
+                    <div class="auth-label-row">
+                        <label for="register-password">Password</label>
+                        <span class="auth-field-hint">At least 8 characters</span>
+                    </div>
+                    <div class="auth-password-wrap">
+                        <input id="register-password" name="password" type="password" required autocomplete="new-password" minlength="8" placeholder="Create a secure password" class="form-input">
+                        <button type="button" class="auth-password-toggle" data-password-toggle="register-password" aria-label="Show password" aria-pressed="false">Show</button>
+                    </div>
                 </div>
                 <button type="submit" class="btn-primary">Create Buyer Account</button>
             </form>
 
-            <div class="auth-page-links">
-                <a class="btn-outline" href="/login.html">Already Have An Account?</a>
-                <a class="btn-outline" href="/">Back To Storefront</a>
-            </div>
+            <footer class="auth-footer">
+                <p class="auth-switch-prompt">
+                    Have already an account?
+                    <a class="auth-text-link" href="/login.html">Log in instead</a>
+                </p>
+            </footer>
         </section>
     </main>
 

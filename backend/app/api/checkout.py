@@ -54,8 +54,10 @@ def confirm_checkout():
     if errors:
         return validation_error_response(errors)
 
+    idempotency_key = request.headers.get("Idempotency-Key") or data.get("idempotency_key")
+
     try:
-        order = place_checkout_order(g.current_user, data)
+        order = place_checkout_order(g.current_user, data, idempotency_key=idempotency_key)
     except CheckoutError as error:
         return checkout_error_response(error)
 

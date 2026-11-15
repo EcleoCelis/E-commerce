@@ -12,21 +12,43 @@
         return labels[condition] || "Secondhand";
     }
 
-    async function request(path, options = {}) {
+    async function request(path, options = {}, _retriedCsrf = false) {
+        const method = String(options.method || "GET").toUpperCase();
+        const isMutating = !["GET", "HEAD", "OPTIONS"].includes(method);
+        const headers = {
+            Accept: "application/json",
+            ...(options.headers || {})
+        };
+        if (isMutating && !headers["X-CSRF-Token"] && window.SecondMarketAuthAPI?.getCsrfToken) {
+            const csrfToken = await window.SecondMarketAuthAPI.getCsrfToken();
+            if (csrfToken) {
+                headers["X-CSRF-Token"] = csrfToken;
+            }
+        }
+
         const response = await fetch(`${BASE_URL}${path}`, {
             credentials: "same-origin",
-            headers: {
-                Accept: "application/json",
-                ...(options.headers || {})
-            },
-            ...options
+            ...options,
+            headers
         });
         const payload = await response.json().catch(() => ({}));
 
+        if (
+            response.status === 403
+            && !_retriedCsrf
+            && isMutating
+            && payload?.error?.code === "csrf_token_invalid"
+            && window.SecondMarketAuthAPI?.getCsrfToken
+        ) {
+            await window.SecondMarketAuthAPI.getCsrfToken(true);
+            return request(path, options, true);
+        }
+
         if (!response.ok || payload.success === false) {
-            const error = new Error(payload.error?.message || "Marketplace request failed.");
+            const error = new Error(payload.message || payload.error?.message || "Marketplace request failed.");
             error.status = response.status;
             error.details = payload.error?.details || {};
+            error.payload = payload;
             throw error;
         }
 
@@ -51,6 +73,7 @@
             name: category.name,
             slug: category.slug,
             description: category.description || "",
+            imageUrl: category.image_url || "",
             productCount: category.product_count || 0
         };
     }
@@ -83,8 +106,10 @@
             gallery: images.length ? images : [primaryImage?.url].filter(Boolean),
             colors: product.color ? [product.color] : ["As shown"],
             sizes: product.dimensions ? [product.dimensions] : ["Standard"],
-            rating: "New",
-            reviewsCount: 0,
+            rating: (product.rating && product.rating > 0) ? `${product.rating} ★` : "New",
+            averageRating: product.rating || 0,
+            reviewsCount: product.reviews_count || 0,
+            ratingSummary: product.rating_summary || null,
             originalPrice: null,
             seller: product.seller || null,
             specs: {
@@ -139,6 +164,38 @@
         return payload.data;
     }
 
+    async function listProductReviews(slug, filters = {}) {
+        const payload = await request(`/products/${encodeURIComponent(slug)}/reviews${buildQueryString(filters)}`);
+        return {
+            reviews: payload.data,
+            count: payload.meta?.count || payload.data.length,
+            ratingSummary: payload.meta?.rating_summary || { average_rating: 0, review_count: 0, breakdown: {} }
+        };
+    }
+
+    async function checkReviewEligibility(slug) {
+        const payload = await request(`/products/${encodeURIComponent(slug)}/reviews/eligibility`);
+        return payload.data;
+    }
+
+    async function submitReview(slug, data) {
+        const payload = await request(`/products/${encodeURIComponent(slug)}/reviews`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+        return payload.data;
+    }
+
+    async function submitProductReport(slug, data) {
+        const payload = await request(`/products/${encodeURIComponent(slug)}/reports`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+        return payload.data;
+    }
+
     function formatError(error) {
         return error?.message || "The marketplace is temporarily unavailable.";
     }
@@ -150,6 +207,10 @@
         listWishlist,
         addWishlistItem,
         removeWishlistItem,
+        listProductReviews,
+        checkReviewEligibility,
+        submitReview,
+        submitProductReport,
         buildQueryString,
         formatError
     };

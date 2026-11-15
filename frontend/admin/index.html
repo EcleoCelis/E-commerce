@@ -4,40 +4,171 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Seller | SecondMarket</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/typography.css">
     <link rel="stylesheet" href="/static/css/admin/base.css">
 </head>
 <body class="admin-page">
     <div class="admin-layout">
         <aside class="admin-sidebar" aria-label="Admin seller navigation">
             <a href="/admin" class="admin-brand" aria-label="SecondMarket admin home">
-                <span class="admin-brand-mark" aria-hidden="true"></span>
-                <span>SecondMarket</span>
+                <div class="admin-brand-icon">S</div>
+                <div class="admin-brand-text">
+                    <strong>SecondMarket</strong>
+                    <span>STORE ADMIN</span>
+                </div>
             </a>
 
             <nav class="admin-nav">
-                <button type="button" data-admin-nav="dashboard" onclick="adminApp.navigate('dashboard')" class="admin-nav-link is-active">Dashboard</button>
-                <button type="button" data-admin-nav="products" onclick="adminApp.navigate('products')" class="admin-nav-link">Products</button>
-                <button type="button" data-admin-nav="categories" onclick="adminApp.navigate('categories')" class="admin-nav-link">Categories</button>
-                <button type="button" data-admin-nav="orders" onclick="adminApp.navigate('orders')" class="admin-nav-link">Orders</button>
+                <div class="admin-nav-section-title">OVERVIEW</div>
+                <button type="button" data-admin-nav="dashboard" onclick="adminApp.navigate('dashboard')" class="admin-nav-link is-active">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span>Dashboard</span>
+                </button>
+
+                <div class="admin-nav-section-title">CATALOG</div>
+                <button type="button" data-admin-nav="products" onclick="adminApp.navigate('products')" class="admin-nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    <span>Products</span>
+                    <span class="admin-nav-badge" id="admin-badge-product-count">0</span>
+                </button>
+                <button type="button" data-admin-nav="categories" onclick="adminApp.navigate('categories')" class="admin-nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                    <span>Categories</span>
+                </button>
+
+                <div class="admin-nav-section-title">COMMERCE</div>
+                <button type="button" data-admin-nav="orders" onclick="adminApp.navigate('orders')" class="admin-nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span>Orders</span>
+                    <span class="admin-nav-badge" id="admin-badge-orders-count">0</span>
+                </button>
+                <button type="button" data-admin-nav="customers" onclick="adminApp.navigate('customers')" class="admin-nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <span>Customers</span>
+                </button>
+                <button type="button" data-admin-nav="payments" onclick="adminApp.navigate('payments')" class="admin-nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                    <span>Payments</span>
+                </button>
+                <button type="button" data-admin-nav="moderation" onclick="adminApp.navigate('moderation')" class="admin-nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span>Moderation</span>
+                    <span class="admin-nav-badge" id="admin-badge-moderation-count" style="display: none;">0</span>
+                </button>
+                <button type="button" data-admin-nav="returns" onclick="adminApp.navigate('returns')" class="admin-nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                    <span>Returns &amp; Refunds</span>
+                    <span class="admin-nav-badge" id="admin-badge-returns-count" style="display: none;">0</span>
+                </button>
+                <button type="button" data-admin-nav="coupons" onclick="adminApp.navigate('coupons')" class="admin-nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                    <span>Coupons</span>
+                </button>
+                <button type="button" data-admin-nav="support" onclick="adminApp.navigate('support')" class="admin-nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <span>Support Tickets</span>
+                    <span class="admin-nav-badge" id="admin-badge-support-count" style="display: none;">0</span>
+                </button>
+                <button type="button" data-admin-nav="reports" onclick="adminApp.navigate('reports')" class="admin-nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    <span>Reports</span>
+                </button>
+                <button type="button" data-admin-nav="settings" onclick="adminApp.navigate('settings')" class="admin-nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>Settings</span>
+                </button>
             </nav>
 
             <div class="admin-sidebar-footer">
-                <a href="/" class="admin-secondary-link">View Storefront</a>
-                <button type="button" onclick="adminApp.logout()" class="admin-secondary-link">Sign Out</button>
+                <div class="admin-sidebar-nav-footer">
+                    <a href="/" class="admin-secondary-link" title="Open marketplace storefront in new tab">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        <span>View Storefront</span>
+                    </a>
+                    <button type="button" onclick="adminApp.logout()" class="admin-secondary-link" title="Sign out of administration portal">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>Sign Out</span>
+                    </button>
+                </div>
+                <div class="admin-sidebar-user-card">
+                    <div class="admin-sidebar-avatar" id="admin-sidebar-avatar">AD</div>
+                    <div class="admin-sidebar-user-meta">
+                        <strong class="admin-sidebar-user-name" id="admin-sidebar-name">Admin Seller</strong>
+                        <span class="admin-sidebar-user-role">Owner</span>
+                    </div>
+                </div>
             </div>
         </aside>
+        <div id="admin-sidebar-backdrop" class="admin-sidebar-backdrop" onclick="adminApp.toggleMobileSidebar(false)"></div>
 
         <div class="admin-workspace">
             <header class="admin-topbar">
-                <div>
-                    <p class="admin-eyebrow">Admin Seller Management</p>
-                    <h1 id="admin-page-title">Inventory Dashboard</h1>
+                <div class="admin-topbar-left">
+                    <button type="button" id="admin-mobile-menu-btn" class="admin-mobile-menu-btn" onclick="adminApp.toggleMobileSidebar()" aria-label="Open navigation menu" aria-expanded="false">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                    <nav class="admin-breadcrumb" aria-label="Breadcrumb">
+                        <span class="admin-breadcrumb-root">SecondMarket</span>
+                        <span class="admin-breadcrumb-sep" aria-hidden="true">/</span>
+                        <span id="admin-header-breadcrumb" class="admin-breadcrumb-active">Dashboard</span>
+                    </nav>
+                    <h1 id="admin-page-title" class="sr-only">Executive Dashboard</h1>
                 </div>
-                <div class="admin-user" aria-live="polite">
-                    <span data-admin-user-name>Checking access...</span>
+
+                <div class="admin-topbar-center">
+                    <div class="admin-global-search-wrap" id="admin-global-search-wrap">
+                        <svg class="admin-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input
+                            id="admin-global-search-input"
+                            type="search"
+                            autocomplete="off"
+                            placeholder="Search orders (#SM-), products, customers..."
+                            class="admin-global-search-input"
+                            oninput="adminApp.handleGlobalSearchInput(this.value)"
+                            onfocus="adminApp.handleGlobalSearchFocus()"
+                            onkeydown="if(event.key==='Enter'){ event.preventDefault(); adminApp.handleGlobalSearch(this.value); } else if(event.key==='Escape'){ adminApp.closeGlobalSearchPopover(); this.blur(); }"
+                        >
+                        <kbd class="admin-search-kbd">⌘K</kbd>
+                        <div id="admin-global-search-popover" class="admin-search-popover" role="listbox" aria-label="Quick search results" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <div class="admin-topbar-right">
+                    <button type="button" class="admin-btn-quick-create" onclick="adminApp.openProductModal()" title="Add a new product to catalog">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span>Create</span>
+                    </button>
+                    <button type="button" id="admin-theme-toggle-btn" class="admin-icon-btn" onclick="adminApp.toggleAdminTheme()" title="Toggle Light/Dark Mode" aria-label="Toggle Light/Dark Mode">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </button>
+                    <div class="admin-notifications-container" style="position: relative;">
+                        <button type="button" class="admin-icon-btn admin-notification-btn" aria-label="Notifications" onclick="adminApp.toggleNotificationsPopover()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            <span class="admin-notification-badge" id="admin-notification-badge">0</span>
+                        </button>
+                        <div id="admin-notifications-popover" class="admin-notifications-popover" style="display: none;" role="region" aria-label="Notifications Panel">
+                            <div class="admin-notifications-header">
+                                <h4>Operational Alerts</h4>
+                                <div class="admin-notifications-header-actions">
+                                    <button type="button" id="admin-mark-all-read-btn" class="admin-text-button" style="font-size: 0.72rem;" onclick="adminApp.handleMarkAllNotificationsRead()">Mark all read</button>
+                                    <button type="button" class="admin-modal-close" onclick="adminApp.closeNotificationsPopover()" style="padding: 0; line-height: 1;" aria-label="Close notifications">&times;</button>
+                                </div>
+                            </div>
+                            <div id="admin-notifications-list" class="admin-notifications-list">
+                                <!-- Populated dynamically via adminApp.renderNotificationsPopover() -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="admin-user" aria-live="polite">
+                        <div class="admin-avatar-circle" id="admin-topbar-avatar" title="Admin profile">AD</div>
+                        <span data-admin-user-name style="display: none;">Checking access...</span>
+                    </div>
                 </div>
             </header>
 
@@ -54,10 +185,19 @@
 
     <script src="/static/js/auth-client.js"></script>
     <script src="/static/js/admin/admin-api.js"></script>
+    <script src="/static/js/admin/components/analytics-charts.js"></script>
     <script src="/static/js/admin/pages/dashboard-page.js"></script>
     <script src="/static/js/admin/pages/products-page.js"></script>
     <script src="/static/js/admin/pages/categories-page.js"></script>
     <script src="/static/js/admin/pages/orders-page.js"></script>
+    <script src="/static/js/admin/pages/customers-page.js"></script>
+    <script src="/static/js/admin/pages/payments-page.js"></script>
+    <script src="/static/js/admin/pages/moderation-page.js"></script>
+    <script src="/static/js/admin/pages/support-page.js"></script>
+    <script src="/static/js/admin/pages/returns-page.js"></script>
+    <script src="/static/js/admin/pages/coupons-page.js"></script>
+    <script src="/static/js/admin/pages/reports-page.js"></script>
+    <script src="/static/js/admin/pages/settings-page.js"></script>
     <script src="/static/js/admin/app.js"></script>
 </body>
 </html>

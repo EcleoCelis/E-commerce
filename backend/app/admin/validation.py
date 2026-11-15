@@ -82,6 +82,52 @@ def validate_images_payload(images):
     return normalized, errors
 
 
+def parse_optional_price_cents(payload, cents_key, decimal_keys, field_label, errors):
+    if cents_key in payload:
+        raw = payload.get(cents_key)
+        if raw is None or clean_text(raw) == "":
+            return True, None
+        parsed = parse_nonnegative_integer(raw, cents_key, errors)
+        return True, parsed
+    for dec_key in decimal_keys:
+        if dec_key in payload:
+            raw = payload.get(dec_key)
+            if raw is None or clean_text(raw) == "":
+                return True, None
+            try:
+                val = float(raw)
+                if val < 0:
+                    errors.setdefault(cents_key, []).append(f"{field_label} cannot be negative.")
+                    return True, None
+                return True, int(round(val * 100))
+            except (ValueError, TypeError):
+                errors.setdefault(cents_key, []).append(f"{field_label} must be a valid number.")
+                return True, None
+    return False, None
+
+
+def validate_variants_payload(variants):
+    if variants is None:
+        return [], {}
+    if not isinstance(variants, list):
+        return None, {"variants": ["Variants must be a list."]}
+    normalized = []
+    errors = {}
+    for index, item in enumerate(variants):
+        if not isinstance(item, dict):
+            errors.setdefault(f"variants.{index}", []).append("Each variant must be an object.")
+            continue
+        name = clean_text(item.get("name"))
+        val = clean_text(item.get("val") if "val" in item else item.get("value"))
+        if not name and not val:
+            continue
+        if not name:
+            errors.setdefault(f"variants.{index}.name", []).append("Option name is required.")
+            continue
+        normalized.append({"name": name[:80], "val": val[:255]})
+    return normalized, errors
+
+
 def validate_product_payload(payload, partial=False):
     payload, errors = require_json_object(payload)
     if errors:
@@ -89,7 +135,7 @@ def validate_product_payload(payload, partial=False):
 
     data = {}
     required_fields = ("title", "category_slug", "description", "price_cents", "condition", "quantity")
-    editable_text_fields = ("title", "slug", "category_slug", "description", "brand", "color", "material", "dimensions")
+    editable_text_fields = ("title", "slug", "category_slug", "description", "sku", "brand", "color", "material", "dimensions")
 
     for field_name in editable_text_fields:
         if field_name in payload:
@@ -97,6 +143,10 @@ def validate_product_payload(payload, partial=False):
 
     if not partial:
         for field_name in required_fields:
+            if field_name == "price_cents" and ("price" in payload and clean_text(payload.get("price")) != ""):
+                continue
+            if field_name == "condition" and "condition" not in payload:
+                continue
             if field_name not in payload or clean_text(payload.get(field_name)) == "":
                 errors.setdefault(field_name, []).append(f"{field_name} is required.")
 
@@ -122,15 +172,67 @@ def validate_product_payload(payload, partial=False):
 
     if "price_cents" in payload:
         data["price_cents"] = parse_nonnegative_integer(payload.get("price_cents"), "price_cents", errors)
+    elif "price" in payload and payload.get("price") is not None:
+        try:
+            price_val = float(payload.get("price"))
+            data["price_cents"] = int(round(price_val * 100))
+        except (ValueError, TypeError):
+            errors.setdefault("price_cents", []).append("price must be a valid number.")
+
+    has_compare, compare_cents = parse_optional_price_cents(
+        payload,
+        "compare_at_price_cents",
+        ("compare_at_price", "compare_price"),
+        "Compare-at price",
+        errors,
+    )
+    if has_compare:
+        data["compare_at_price_cents"] = compare_cents
+
+    has_cost, cost_cents = parse_optional_price_cents(
+        payload,
+        "cost_cents",
+        ("cost", "cost_price"),
+        "Cost per item",
+        errors,
+    )
+    if has_cost:
+        data["cost_cents"] = cost_cents
 
     if "quantity" in payload:
         data["quantity"] = parse_nonnegative_integer(payload.get("quantity"), "quantity", errors)
+
+    if "low_stock_threshold" in payload and payload.get("low_stock_threshold") is not None and clean_text(payload.get("low_stock_threshold")) != "":
+        data["low_stock_threshold"] = parse_nonnegative_integer(payload.get("low_stock_threshold"), "low_stock_threshold", errors)
+    elif not partial:
+        data["low_stock_threshold"] = 5
+
+    if "track_inventory" in payload and payload.get("track_inventory") is not None:
+        val = payload.get("track_inventory")
+        if isinstance(val, bool):
+            data["track_inventory"] = val
+        elif str(val).strip().lower() in {"true", "1", "yes", "on"}:
+            data["track_inventory"] = True
+        elif str(val).strip().lower() in {"false", "0", "no", "off"}:
+            data["track_inventory"] = False
+        else:
+            errors.setdefault("track_inventory", []).append("track_inventory must be true or false.")
+    elif not partial:
+        data["track_inventory"] = True
+
+    if "variants" in payload or "variants_json" in payload:
+        raw_variants = payload.get("variants") if "variants" in payload else payload.get("variants_json")
+        variants, variant_errors = validate_variants_payload(raw_variants)
+        data["variants_json"] = variants
+        errors.update(variant_errors)
 
     if "condition" in payload:
         condition = clean_text(payload.get("condition"))
         data["condition"] = condition
         if condition not in PRODUCT_CONDITIONS:
             errors.setdefault("condition", []).append("Condition must be new_other, like_new, good, fair, or for_repair.")
+    elif not partial:
+        data["condition"] = ProductCondition.LIKE_NEW.value
 
     if "status" in payload:
         status = clean_text(payload.get("status")) or ProductStatus.DRAFT.value
@@ -195,9 +297,13 @@ def validate_category_payload(payload, partial=False):
         return {}, errors
 
     data = {}
-    for field_name in ("name", "slug", "description"):
+    for field_name in ("name", "slug", "description", "image_url"):
         if field_name in payload:
-            data[field_name] = clean_text(payload.get(field_name))
+            cleaned = clean_text(payload.get(field_name))
+            if field_name in ("description", "image_url"):
+                data[field_name] = cleaned if cleaned else None
+            else:
+                data[field_name] = cleaned
 
     if not partial and "name" not in payload:
         errors.setdefault("name", []).append("Name is required.")
@@ -243,3 +349,31 @@ def validate_category_status_payload(payload):
 
     is_active = parse_boolean(payload.get("is_active"), "is_active", errors)
     return {"is_active": is_active}, errors
+
+
+def validate_bulk_product_payload(payload):
+    payload, errors = require_json_object(payload)
+    if errors:
+        return {}, errors
+
+    slugs = payload.get("slugs") or payload.get("product_slugs")
+    if not isinstance(slugs, list) or not slugs:
+        errors.setdefault("slugs", []).append("Please select at least one product.")
+        return {}, errors
+
+    cleaned_slugs = [clean_text(s) for s in slugs if clean_text(s)]
+    if not cleaned_slugs:
+        errors.setdefault("slugs", []).append("Please select at least one valid product.")
+
+    action = clean_text(payload.get("action")).lower()
+    if action not in {"status", "delete"}:
+        errors.setdefault("action", []).append("Action must be 'status' or 'delete'.")
+
+    status = None
+    if action == "status":
+        status = clean_text(payload.get("status"))
+        if not status or status not in PRODUCT_STATUSES:
+            errors.setdefault("status", []).append("Status must be draft, available, reserved, sold, or hidden.")
+
+    return {"slugs": cleaned_slugs, "action": action, "status": status}, errors
+

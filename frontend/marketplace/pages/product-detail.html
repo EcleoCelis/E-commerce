@@ -1,9 +1,9 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <nav class="text-xs text-[#776B56] mb-8 flex items-center gap-2">
-        <a href="#" onclick="app.navigate('home'); return false;" class="hover:underline">Home</a>
-        <span>/</span>
-        <a href="#" onclick="app.navigate('shop', {category: '{{categorySlug}}'}); return false;" class="hover:underline">{{categoryName}}</a>
-        <span>/</span>
+    <nav class="text-xs text-[#776B56] mb-8 flex flex-wrap items-center gap-2" aria-label="Breadcrumb">
+        <a href="#" onclick="app.navigate('home'); return false;" class="hover:underline inline-flex items-center min-h-[44px] sm:min-h-0">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="#" onclick="app.navigate('shop', {category: '{{categorySlug}}'}); return false;" class="hover:underline inline-flex items-center min-h-[44px] sm:min-h-0">{{categoryName}}</a>
+        <span aria-hidden="true">/</span>
         <span class="text-[#4E4638] font-semibold">{{title}}</span>
     </nav>
 
@@ -21,46 +21,91 @@
             <div>
                 <p class="text-xs uppercase tracking-widest text-[#776B56] font-bold">{{categoryName}}</p>
                 <h1 class="font-serif text-3xl font-semibold text-[#4E4638] mt-1">{{title}}</h1>
-                <div class="flex items-center gap-4 mt-3">
-                    <span class="text-xl font-bold text-[#4E4638]">{{price}}</span>
-                    <span class="text-xs text-[#776B56]">{{conditionLabel}} | {{quantity}} available</span>
+                <div class="flex flex-wrap items-center gap-3 mt-3">
+                    <span class="text-2xl font-bold text-[#4E4638]">{{price}}</span>
+                    {{availabilityBadgeMarkup}}
+                    <span class="text-xs text-[#776B56]">{{conditionLabel}} &bull; {{quantity}} available</span>
+                </div>
+                <div class="flex items-center gap-2 mt-2.5">
+                    <span class="text-xs font-semibold text-[#6E614D]">{{ratingDisplay}}</span>
+                    <a href="#pdp-reviews-section" class="text-xs text-[#776B56] hover:underline inline-flex items-center min-h-[44px] sm:min-h-0">({{reviewsCountLabel}})</a>
                 </div>
             </div>
 
             <p class="text-sm text-[#776B56] leading-relaxed">{{description}}</p>
 
             <div>
-                <label class="block text-xs uppercase tracking-wider text-[#4E4638] font-bold mb-2">Color Variant: <span class="text-[#776B56] font-normal">{{selectedColor}}</span></label>
-                <div class="flex gap-2">{{colorButtons}}</div>
+                <p class="block text-xs uppercase tracking-wider text-[#4E4638] font-bold mb-2">Color Variant: <span class="text-[#776B56] font-normal">{{selectedColor}}</span></p>
+                <div class="flex flex-wrap gap-2">{{colorButtons}}</div>
             </div>
 
             <div>
-                <label class="block text-xs uppercase tracking-wider text-[#4E4638] font-bold mb-2">Size / Dimensions: <span class="text-[#776B56] font-normal">{{selectedSize}}</span></label>
-                <div class="flex gap-2">{{sizeButtons}}</div>
+                <p class="block text-xs uppercase tracking-wider text-[#4E4638] font-bold mb-2">Size / Dimensions: <span class="text-[#776B56] font-normal">{{selectedSize}}</span></p>
+                <div class="flex flex-wrap gap-2">{{sizeButtons}}</div>
             </div>
 
-            <div class="pt-4 flex items-center gap-4 border-t border-[#D7CEC1]">
+            <div class="pt-4 flex flex-wrap sm:flex-nowrap items-center gap-4 border-t border-[#D7CEC1]">
                 <div class="flex items-center border border-[#D7CEC1] rounded bg-white">
-                    <button onclick="app.state.pdpQty = Math.max(1, (app.state.pdpQty||1)-1); app.render();" class="px-3 py-2 text-[#776B56] hover:text-[#4E4638]">-</button>
+                    <button type="button" onclick="app.state.pdpQty = Math.max(1, (app.state.pdpQty||1)-1); app.render();" class="px-3 py-2 min-w-[44px] min-h-[44px] text-[#776B56] hover:text-[#4E4638] inline-flex items-center justify-center" aria-label="Decrease quantity">-</button>
                     <span class="px-4 text-xs font-semibold">{{quantitySelected}}</span>
-                    <button onclick="app.state.pdpQty = (app.state.pdpQty||1)+1; app.render();" class="px-3 py-2 text-[#776B56] hover:text-[#4E4638]">+</button>
+                    <button type="button" onclick="app.state.pdpQty = (app.state.pdpQty||1)+1; app.render();" class="px-3 py-2 min-w-[44px] min-h-[44px] text-[#776B56] hover:text-[#4E4638] inline-flex items-center justify-center" aria-label="Increase quantity">+</button>
                 </div>
-
-                <button onclick="app.addToCart('{{productId}}', '{{selectedColor}}', '{{selectedSize}}', {{quantitySelected}})" class="btn-primary flex-1 py-3 text-xs uppercase tracking-widest">
+                <button type="button" onclick="app.addToCart('{{productId}}', '{{selectedColor}}', '{{selectedSize}}', '{{quantitySelected}}') " class="btn-primary flex-1 py-3 min-h-[44px] text-xs uppercase tracking-widest">
                     Add To Bag - {{lineTotal}}
                 </button>
             </div>
 
             <div class="border-t border-[#D7CEC1] pt-4 space-y-2 text-xs">
                 <div class="p-3 bg-[#FAF8F5] rounded border border-[#D7CEC1]/50 space-y-1">
-                    <p class="font-bold text-[#4E4638]">Material & Brand</p>
+                    <p class="font-bold text-[#4E4638]">Material &amp; Brand</p>
                     <p class="text-[#776B56]">{{material}} | {{brand}}</p>
                 </div>
                 <div class="p-3 bg-[#FAF8F5] rounded border border-[#D7CEC1]/50 space-y-1">
-                    <p class="font-bold text-[#4E4638]">Dimensions & Seller</p>
+                    <p class="font-bold text-[#4E4638]">Dimensions &amp; Seller</p>
                     <p class="text-[#776B56]">{{dimensions}} | {{sellerName}}</p>
+                </div>
+                <div class="pt-2 flex flex-wrap justify-between items-center gap-2 text-xs text-[#6E614D]">
+                    <span>Verified SecondMarket Listing</span>
+                    <button type="button" onclick="app.openReportModal('{{productId}}')" class="hover:text-[#4E4638] underline flex items-center gap-1 min-h-[44px] sm:min-h-0">
+                        <span aria-hidden="true">⚐</span> Report this listing
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- REVIEWS & RATINGS SECTION -->
+    <section id="pdp-reviews-section" class="mt-16 pt-10 border-t border-[#D7CEC1]" aria-label="Customer reviews">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <div>
+                <p class="text-xs uppercase tracking-widest text-[#776B56] font-bold">Verified Buyer Feedback</p>
+                <h2 class="font-serif text-2xl font-semibold text-[#4E4638] mt-1">Customer Reviews</h2>
+                <div class="flex items-center gap-3 mt-2">
+                    <span class="text-2xl font-bold text-[#4E4638]">{{averageRatingScore}}</span>
+                    <span class="text-sm text-[#6E614D]">{{ratingStars}}</span>
+                    <span class="text-xs text-[#776B56]">({{reviewsCountLabel}})</span>
+                </div>
+            </div>
+            <div>
+                {{reviewActionContainer}}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="p-6 bg-[#FAF8F5] rounded border border-[#D7CEC1] space-y-3 h-fit">
+                <h3 class="text-xs uppercase tracking-widest text-[#4E4638] font-bold">Rating Breakdown</h3>
+                {{ratingBreakdownBars}}
+            </div>
+
+            <div class="lg:col-span-2 space-y-4">
+                {{reviewsList}}
+            </div>
+        </div>
+    </section>
+
+    <!-- REPORT LISTING MODAL -->
+    {{reportModalMarkup}}
+
+    <!-- WRITE REVIEW MODAL -->
+    {{reviewModalMarkup}}
 </div>

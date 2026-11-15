@@ -1,51 +1,174 @@
 <!-- HERO SECTION -->
-<section class="marketplace-home-hero relative bg-[#4E4638] text-white px-4 overflow-hidden">
-    <div class="absolute inset-0 opacity-40">
-        <img src="/static/productImages/bags/young-girl-with-gray-student-backpack.jpg" class="w-full h-full object-cover" alt="Secondhand marketplace hero item">
+<section class="marketplace-home-hero relative bg-[#3E372B] text-white overflow-hidden">
+    <div class="home-hero-media" id="home-hero-media" aria-hidden="true">
+        <picture class="home-hero-slide is-active" data-hero-slide="0">
+            <source srcset="/static/images/hero-furniture-editorial.webp" type="image/webp">
+            <img src="/static/images/hero-furniture-editorial.jpg"
+                 class="home-hero-image"
+                 alt=""
+                 fetchpriority="high"
+                 decoding="async"
+                 onerror="this.onerror=null; const pic=this.closest('picture'); if(pic) pic.querySelectorAll('source').forEach((s)=>s.remove()); this.src='/static/productImages/bags/young-girl-with-gray-student-backpack.jpg';">
+        </picture>
+        <picture class="home-hero-slide" data-hero-slide="1">
+            <source srcset="/static/images/hero-furniture-dining.webp" type="image/webp">
+            <img src="/static/images/hero-furniture-dining.jpg"
+                 class="home-hero-image"
+                 alt=""
+                 decoding="async"
+                 onerror="this.onerror=null; const pic=this.closest('picture'); if(pic) pic.querySelectorAll('source').forEach((s)=>s.remove()); this.src='/static/images/hero-furniture-editorial.jpg';">
+        </picture>
+        <picture class="home-hero-slide" data-hero-slide="2">
+            <source srcset="/static/images/hero-tech-devices.webp" type="image/webp">
+            <img src="/static/images/hero-tech-devices.jpg"
+                 class="home-hero-image"
+                 alt=""
+                 decoding="async"
+                 onerror="this.onerror=null; const pic=this.closest('picture'); if(pic) pic.querySelectorAll('source').forEach((s)=>s.remove()); this.src='/static/images/hero-furniture-editorial.jpg';">
+        </picture>
+        <picture class="home-hero-slide" data-hero-slide="3">
+            <source srcset="/static/images/hero-smartphones.webp" type="image/webp">
+            <img src="/static/images/hero-smartphones.jpg"
+                 class="home-hero-image"
+                 alt=""
+                 decoding="async"
+                 onerror="this.onerror=null; const pic=this.closest('picture'); if(pic) pic.querySelectorAll('source').forEach((s)=>s.remove()); this.src='/static/images/hero-furniture-editorial.jpg';">
+        </picture>
     </div>
-    <div class="marketplace-home-hero-content relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-start space-y-6">
-        <span class="text-xs uppercase tracking-widest text-[#B9A995] font-semibold bg-[#776B56]/40 px-3 py-1 rounded">Buyer Marketplace</span>
-        <h1 class="marketplace-home-title font-serif text-4xl sm:text-6xl lg:text-7xl font-light leading-tight max-w-3xl">
-            Find practical secondhand pieces ready for a new home.
-        </h1>
-        <p class="text-sm sm:text-base text-[#D7CEC1] max-w-xl font-light leading-relaxed">
-            Browse available items listed by the SecondMarket admin seller, from electronics and clothing to everyday household finds.
-        </p>
-        <div class="marketplace-home-actions pt-4 flex flex-wrap gap-4">
-            <button onclick="app.navigate('shop')" class="btn-primary py-3.5 px-8 text-xs uppercase tracking-widest">Explore Catalog</button>
-            <button onclick="app.navigate('shop', {category: 'fashion'})" class="btn-outline py-3.5 px-8 text-xs uppercase tracking-widest text-white border-white hover:bg-white hover:text-[#4E4638]">View Fashion</button>
+    <div class="home-hero-overlay" aria-hidden="true"></div>
+    <div class="marketplace-home-hero-content relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="home-hero-copy">
+            <p class="home-hero-eyebrow">Curated Secondhand Living</p>
+            <h1 class="marketplace-home-title font-serif font-light text-white">
+                Find Furniture That Feels <em class="home-hero-accent">Like Home.</em>
+            </h1>
+            <p class="home-hero-subtitle">
+                Discover inspected pre-owned sofas, solid wood pieces, electronics, and wardrobe essentials thoughtfully graded for their next chapter.
+            </p>
+
+            <!-- Hero Primary & Secondary Actions -->
+            <div class="marketplace-home-actions">
+                <button type="button" onclick="app.navigate('shop')" class="btn-hero-primary">
+                    <span>Shop Collection</span>
+                    <span aria-hidden="true">&rarr;</span>
+                </button>
+                <button type="button" onclick="document.getElementById('home-categories-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })" class="btn-hero-outline">
+                    Explore Categories
+                </button>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <div class="flex justify-between items-end mb-8">
-        <div>
-            <p class="text-xs uppercase tracking-widest text-[#776B56] font-bold">Categories</p>
-            <h2 class="font-serif text-2xl sm:text-3xl text-[#4E4638]">Browse By Category</h2>
-        </div>
-        <a href="#" onclick="app.navigate('shop'); return false;" class="text-xs uppercase tracking-widest text-[#9A8B74] hover:text-[#4E4638] font-bold">View All Categories &rarr;</a>
+<!-- LIVE MARKETPLACE VALUE & TRUST BAR -->
+<section class="home-trust-strip" aria-label="Marketplace highlights">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <button type="button" onclick="app.navigate('shop')" class="home-trust-item text-left w-full cursor-pointer">
+            <div class="home-trust-icon" aria-hidden="true">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-[#4E4638]">{{availableCount}} Available Finds</p>
+                <p class="text-xs text-[#776B56]">In-stock &amp; ready for checkout</p>
+            </div>
+        </button>
+        <button type="button" onclick="app.quickShopFilter({condition: 'like_new'})" class="home-trust-item text-left w-full cursor-pointer">
+            <div class="home-trust-icon" aria-hidden="true">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-[#4E4638]">Condition Graded</p>
+                <p class="text-xs text-[#776B56]">Inspected by Admin Seller</p>
+            </div>
+        </button>
+        <button type="button" onclick="app.navigate('shop')" class="home-trust-item text-left w-full cursor-pointer">
+            <div class="home-trust-icon" aria-hidden="true">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 6h16M4 12h16M4 18h7"/></svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-[#4E4638]">{{activeCategoryCount}} Active Collections</p>
+                <p class="text-xs text-[#776B56]">Curated secondhand categories</p>
+            </div>
+        </button>
+        <a href="/orders" class="home-trust-item text-left w-full cursor-pointer">
+            <div class="home-trust-icon" aria-hidden="true">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-[#4E4638]">Tracked Delivery</p>
+                <p class="text-xs text-[#776B56]">Live order &amp; return portal</p>
+            </div>
+        </a>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+</section>
+
+<section id="home-categories-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
+        <div>
+            <p class="text-xs uppercase tracking-widest text-[#6E614D] font-bold">Curated Departments</p>
+            <h2 class="font-serif text-2xl sm:text-3xl text-[#4E4638] mt-1">Browse By Category</h2>
+        </div>
+        <a href="#" onclick="app.navigate('shop'); return false;" class="text-xs uppercase tracking-widest text-[#4E4638] hover:text-[#6E614D] font-bold inline-flex items-center gap-1.5 min-h-[44px] sm:min-h-0">
+            <span>View All Categories</span>
+            <span aria-hidden="true">&rarr;</span>
+        </a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         {{categoryTiles}}
     </div>
 </section>
 
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="text-center max-w-2xl mx-auto mb-12">
-        <span class="text-xs uppercase tracking-widest text-[#776B56] font-semibold">Available Now</span>
+    <div class="text-center max-w-2xl mx-auto mb-8">
+        <span class="text-xs uppercase tracking-widest text-[#6E614D] font-bold">Available Now</span>
         <h2 class="font-serif text-3xl text-[#4E4638] mt-1">Featured Secondhand Finds</h2>
+        <p class="text-xs text-[#776B56] mt-2">Filter featured items below or click any listing to inspect photos, condition, and specs.</p>
     </div>
+    {{featuredFilterTabs}}
     {{featuredStatus}}
     {{featuredProducts}}
 </section>
 
-<section class="bg-[#D7CEC1]/30 my-16 py-20 border-y border-[#B9A995]/50">
-    <div class="max-w-5xl mx-auto px-4 text-center space-y-6">
-        <span class="text-xs uppercase tracking-widest text-[#776B56] font-bold">Secondhand Promise</span>
-        <h2 class="font-serif text-3xl sm:text-4xl text-[#4E4638] leading-snug">
-            "Every listed item should be clear, reusable, fairly priced, and easy for buyers to evaluate before checkout."
-        </h2>
-        <p class="text-xs uppercase tracking-widest text-[#9A8B74] font-semibold">- SecondMarket Admin Seller</p>
+<section class="bg-[#D7CEC1]/30 my-10 py-16 border-y border-[#B9A995]/50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        <div class="max-w-4xl mx-auto text-center space-y-4">
+            <span class="text-xs uppercase tracking-widest text-[#776B56] font-bold">Secondhand Promise</span>
+            <h2 class="font-serif text-2xl sm:text-4xl text-[#4E4638] leading-snug">
+                "Every listed item should be clear, reusable, fairly priced, and easy for buyers to evaluate before checkout."
+            </h2>
+            <p class="text-xs uppercase tracking-widest text-[#6E614D] font-semibold">- SecondMarket Admin Seller</p>
+            <div class="pt-1">
+                <a href="#" onclick="app.navigate('about'); return false;" class="inline-flex items-center min-h-[44px] sm:min-h-0 text-xs font-semibold uppercase tracking-widest text-[#4E4638] hover:text-[#6E614D] underline underline-offset-4 transition">
+                    About SecondMarket &amp; The Engineering Team &rarr;
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+            <button type="button" onclick="app.quickShopFilter({condition: 'like_new'})" class="home-promise-card text-left w-full">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="badge badge-new">Like New</span>
+                    <span class="text-xs font-semibold text-[#6E614D]">Browse Grade &rarr;</span>
+                </div>
+                <h3 class="font-serif text-lg font-semibold text-[#4E4638]">Minimal to No Wear</h3>
+                <p class="text-xs text-[#776B56] mt-1 leading-relaxed">Clean, fully functional items in near-original condition ready for immediate use.</p>
+            </button>
+            <button type="button" onclick="app.quickShopFilter({condition: 'good'})" class="home-promise-card text-left w-full">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="badge badge-condition">Good Condition</span>
+                    <span class="text-xs font-semibold text-[#6E614D]">Browse Grade &rarr;</span>
+                </div>
+                <h3 class="font-serif text-lg font-semibold text-[#4E4638]">Well-Cared Pre-Loved</h3>
+                <p class="text-xs text-[#776B56] mt-1 leading-relaxed">Gently used pieces with minor cosmetic signs of use and verified functionality.</p>
+            </button>
+            <button type="button" onclick="app.quickShopFilter({condition: 'fair'})" class="home-promise-card text-left w-full">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="badge badge-condition">Fair Value</span>
+                    <span class="text-xs font-semibold text-[#6E614D]">Browse Grade &rarr;</span>
+                </div>
+                <h3 class="font-serif text-lg font-semibold text-[#4E4638]">Practical &amp; Budget-Friendly</h3>
+                <p class="text-xs text-[#776B56] mt-1 leading-relaxed">Honest everyday finds priced for maximum value with clear condition notes.</p>
+            </button>
+        </div>
     </div>
 </section>

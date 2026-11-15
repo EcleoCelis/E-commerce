@@ -102,6 +102,7 @@ class Order(IntPrimaryKeyMixin, TimestampMixin, db.Model):
     __table_args__ = (
         CheckConstraint("subtotal_cents >= 0", name="ck_orders_subtotal_nonnegative"),
         CheckConstraint("shipping_cents >= 0", name="ck_orders_shipping_nonnegative"),
+        CheckConstraint("discount_cents >= 0", name="ck_orders_discount_nonnegative"),
         CheckConstraint("total_cents >= 0", name="ck_orders_total_nonnegative"),
     )
 
@@ -112,7 +113,10 @@ class Order(IntPrimaryKeyMixin, TimestampMixin, db.Model):
     shipping_status = db.Column(db.String(32), nullable=False, default=ShippingStatus.NOT_READY.value, index=True)
     subtotal_cents = db.Column(db.Integer, nullable=False, default=0)
     shipping_cents = db.Column(db.Integer, nullable=False, default=0)
+    discount_cents = db.Column(db.Integer, nullable=False, default=0)
     total_cents = db.Column(db.Integer, nullable=False, default=0)
+    coupon_code = db.Column(db.String(50), nullable=True)
+    admin_notes = db.Column(db.Text, nullable=True)
     placed_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
     user = db.relationship("User", back_populates="orders")
@@ -148,7 +152,8 @@ class Order(IntPrimaryKeyMixin, TimestampMixin, db.Model):
 
     def recalculate_totals(self):
         self.subtotal_cents = sum(item.line_total_cents for item in self.items)
-        self.total_cents = self.subtotal_cents + self.shipping_cents
+        discount = self.discount_cents or 0
+        self.total_cents = max(0, self.subtotal_cents - discount) + self.shipping_cents
 
 
 class OrderItem(IntPrimaryKeyMixin, TimestampMixin, db.Model):
@@ -229,6 +234,8 @@ class ShippingRecord(IntPrimaryKeyMixin, TimestampMixin, db.Model):
     postal_code = db.Column(db.String(20), nullable=False)
     country = db.Column(db.String(80), nullable=False, default="Philippines")
     tracking_number = db.Column(db.String(120), nullable=True, unique=True)
+    carrier = db.Column(db.String(80), nullable=True)
+    tracking_url = db.Column(db.String(500), nullable=True)
     status = db.Column(db.String(32), nullable=False, default=ShippingStatus.NOT_READY.value, index=True)
 
     order = db.relationship("Order", back_populates="shipping_record")
@@ -245,3 +252,115 @@ class ShippingRecord(IntPrimaryKeyMixin, TimestampMixin, db.Model):
         if value not in {status.value for status in ShippingStatus}:
             raise ValueError("Shipping status is not supported.")
         return value
+
+
+class DiscountType(StrEnum):
+    FIXED = "fixed"
+    PERCENTAGE = "percentage"
+
+
+class Coupon(IntPrimaryKeyMixin, TimestampMixin, db.Model):
+    __tablename__ = "coupons"
+    __table_args__ = (
+        CheckConstraint("discount_value_cents > 0", name="ck_coupons_discount_positive"),
+        CheckConstraint("min_spend_cents >= 0", name="ck_coupons_min_spend_nonnegative"),
+    )
+
+    code = db.Column(db.String(50), nullable=False, unique=True, index=True)
+    discount_type = db.Column(db.String(20), nullable=False, default=DiscountType.FIXED.value)
+    discount_value_cents = db.Column(db.Integer, nullable=False)
+    min_spend_cents = db.Column(db.Integer, nullable=False, default=0)
+    max_discount_cents = db.Column(db.Integer, nullable=True)
+    usage_limit = db.Column(db.Integer, nullable=True)
+    used_count = db.Column(db.Integer, nullable=False, default=0)
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
+    valid_from = db.Column(db.DateTime(timezone=True), nullable=True)
+    valid_until = db.Column(db.DateTime(timezone=True), nullable=True)
+
+    redemptions = db.relationship("CouponRedemption", back_populates="coupon", cascade="all, delete-orphan", lazy="selectin")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "code": self.code,
+            "discount_type": self.discount_type,
+            "discount_value": self.discount_value_cents / 100,
+            "min_spend": self.min_spend_cents / 100,
+            "max_discount": (self.max_discount_cents / 100) if self.max_discount_cents else None,
+            "usage_limit": self.usage_limit,
+            "used_count": self.used_count,
+            "is_active": self.is_active,
+            "valid_from": self.valid_from.isoformat() if self.valid_from else None,
+            "valid_until": self.valid_until.isoformat() if self.valid_until else None,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class CouponRedemption(IntPrimaryKeyMixin, TimestampMixin, db.Model):
+    __tablename__ = "coupon_redemptions"
+
+    coupon_id = db.Column(db.Integer, db.ForeignKey("coupons.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    order_id = db.Column(db.Integer, db.ForeignKey("orders.id", ondelete="CASCADE"), nullable=False, index=True)
+    discount_cents = db.Column(db.Integer, nullable=False)
+
+    coupon = db.relationship("Coupon", back_populates="redemptions")
+    order = db.relationship("Order", backref=db.backref("coupon_redemption", uselist=False, lazy="selectin"))
+    user = db.relationship("User", backref=db.backref("coupon_redemptions", lazy="selectin"))
+
+
+class ReturnStatus(StrEnum):
+    REQUESTED = "requested"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    REFUNDED = "refunded"
+    COMPLETED = "completed"
+
+
+class ReturnRequest(IntPrimaryKeyMixin, TimestampMixin, db.Model):
+    __tablename__ = "return_requests"
+
+    return_number = db.Column(db.String(32), nullable=False, unique=True, index=True)
+    order_id = db.Column(db.Integer, db.ForeignKey("orders.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    reason = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(32), nullable=False, default=ReturnStatus.REQUESTED.value, index=True)
+    refund_amount_cents = db.Column(db.Integer, nullable=False, default=0)
+    admin_notes = db.Column(db.Text, nullable=True)
+
+    order = db.relationship("Order", backref=db.backref("return_requests", cascade="all, delete-orphan", lazy="selectin"))
+    user = db.relationship("User", backref=db.backref("return_requests", cascade="all, delete-orphan", lazy="selectin"))
+
+    def to_dict(self):
+        payments = list(self.order.payments or []) if self.order else []
+        primary_payment = next((p for p in payments if p.method != "refund"), None)
+        refund_payment = next(
+            (
+                p
+                for p in reversed(payments)
+                if p.method == "refund" or p.status == PaymentStatus.REFUNDED.value
+            ),
+            None,
+        )
+        refund_ref = refund_payment.reference_number if refund_payment else None
+        return {
+            "id": self.id,
+            "return_number": self.return_number,
+            "order_number": self.order.order_number if self.order else None,
+            "order_total": (self.order.total_cents / 100) if self.order else None,
+            "order_payment_status": self.order.payment_status if self.order else None,
+            "payment_method": primary_payment.method if primary_payment else None,
+            "refund_reference": refund_ref,
+            "refund_gateway": "stripe" if (refund_ref or "").startswith("re_") else ("manual" if refund_ref else None),
+            "user_id": self.user_id,
+            "user_email": self.user.email if self.user else None,
+            "reason": self.reason,
+            "description": self.description,
+            "status": self.status,
+            "refund_amount": self.refund_amount_cents / 100,
+            "admin_notes": self.admin_notes,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }
+

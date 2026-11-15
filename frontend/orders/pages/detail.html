@@ -1,3 +1,4 @@
+<template id="template-detail">
 <section class="orders-section" aria-labelledby="orders-detail-title">
     <div class="orders-section-header">
         <div>
@@ -45,7 +46,11 @@
         </aside>
     </div>
 
+    {{paymentPanel}}
+
     {{trackingPanel}}
+
+    {{returnSection}}
 
     <section class="orders-panel" aria-label="Shipping address">
         <div class="orders-panel-header">
@@ -56,3 +61,4 @@
         </div>
     </section>
 </section>
+</template>

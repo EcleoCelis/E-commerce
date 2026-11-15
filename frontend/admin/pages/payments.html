@@ -1,0 +1,66 @@
+<template id="template-payments">
+<section class="admin-section admin-payments-page" aria-labelledby="admin-payments-title">
+    <div class="admin-page-header">
+        <div class="admin-page-title-group">
+            <h1 id="admin-payments-title" class="admin-page-title">Payments &amp; Transactions Ledger</h1>
+            <p class="admin-page-subtitle">Monitor Stripe sessions, GCash settlements, Cash on Delivery collections, and executed refunds.</p>
+        </div>
+        <div class="admin-header-actions">
+            <button type="button" class="admin-button-secondary" onclick="adminApp.refreshPayments()">Refresh Ledger</button>
+        </div>
+    </div>
+
+    {{kpiStrip}}
+
+    <div class="admin-orders-toolbar-card">
+        <form class="admin-orders-toolbar" onsubmit="adminApp.applyPaymentFilters(event)">
+            <div class="admin-orders-search-wrapper">
+                <svg class="admin-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input
+                    type="search"
+                    name="q"
+                    class="admin-search-input"
+                    placeholder="Search reference (pi_, cs_, re_), order #, or buyer email..."
+                    value="{{searchQuery}}"
+                    aria-label="Search payments by reference, order number, or buyer"
+                >
+            </div>
+            <div class="admin-orders-filters-group">
+                <select name="method" class="admin-select-pill" aria-label="Payment method filter">
+                    {{methodOptions}}
+                </select>
+                <select name="status" class="admin-select-pill" aria-label="Payment status filter">
+                    {{statusOptions}}
+                </select>
+                <button type="submit" class="admin-btn admin-btn-primary">Apply</button>
+                <button type="button" class="admin-btn admin-btn-secondary" onclick="adminApp.resetPaymentFilters()">Reset</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="admin-panel">
+        <div class="admin-panel-header">
+            <h3>{{paymentCountLabel}}</h3>
+        </div>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Reference &amp; Gateway</th>
+                        <th scope="col">Order</th>
+                        <th scope="col">Buyer</th>
+                        <th scope="col">Method</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="admin-th-numeric">Amount</th>
+                        <th scope="col">Recorded</th>
+                        <th scope="col" style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{paymentRows}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</template>

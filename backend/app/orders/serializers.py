@@ -2,14 +2,34 @@ from backend.app.marketplace.serializers import format_price
 
 
 def serialize_order_item(item):
+    product = item.product
+    primary_image_url = None
+    condition = None
+    brand = None
+    sku = None
+
+    if product:
+        condition = product.condition
+        brand = product.brand
+        sku = product.sku or str(product.id)
+        if product.images:
+            primary_img = next((img for img in product.images if img.is_primary), product.images[0])
+            primary_image_url = primary_img.image_url if primary_img else None
+
     return {
         "id": item.id,
         "product_id": item.product_id,
+        "product_slug": product.slug if product else None,
         "product_title": item.product_title,
         "quantity": item.quantity,
         "unit_price": format_price(item.unit_price_cents),
         "line_total": format_price(item.line_total_cents),
+        "product_image_url": primary_image_url,
+        "condition": condition,
+        "brand": brand,
+        "sku": sku,
     }
+
 
 
 def serialize_payment(payment):
@@ -39,7 +59,9 @@ def serialize_shipping_record(shipping_record):
         "province": shipping_record.province,
         "postal_code": shipping_record.postal_code,
         "country": shipping_record.country,
+        "carrier": shipping_record.carrier,
         "tracking_number": shipping_record.tracking_number,
+        "tracking_url": shipping_record.tracking_url,
         "status": shipping_record.status,
     }
 
@@ -64,6 +86,7 @@ def serialize_order_summary(order, include_buyer=False):
             "id": order.user.id,
             "name": f"{order.user.first_name} {order.user.last_name}".strip(),
             "email": order.user.email,
+            "phone": order.user.phone,
         }
 
     return data
@@ -73,6 +96,9 @@ def serialize_order_detail(order, include_buyer=False):
     data = serialize_order_summary(order, include_buyer=include_buyer)
     data.update(
         {
+            "discount": format_price(order.discount_cents or 0),
+            "coupon_code": order.coupon_code,
+            "admin_notes": order.admin_notes,
             "items": [serialize_order_item(item) for item in order.items],
             "payments": [serialize_payment(payment) for payment in order.payments],
             "shipping_record": serialize_shipping_record(order.shipping_record),

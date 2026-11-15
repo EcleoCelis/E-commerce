@@ -5,6 +5,7 @@ class SecondMarketOrdersApp {
             user: null,
             orders: [],
             currentOrder: null,
+            currentReturn: null,
             loading: true,
             actionLoading: false,
             error: "",
@@ -75,6 +76,9 @@ class SecondMarketOrdersApp {
 
         try {
             this.state.currentOrder = await window.SecondMarketOrdersAPI.getOrder(orderNumber);
+            this.state.currentReturn = window.SecondMarketOrdersAPI.getOrderReturn
+                ? await window.SecondMarketOrdersAPI.getOrderReturn(orderNumber).catch(() => null)
+                : null;
             this.state.currentView = "detail";
             this.syncBrowserUrl("detail", orderNumber);
         } catch (error) {
@@ -105,6 +109,51 @@ class SecondMarketOrdersApp {
         }
     }
 
+    async confirmOrderPayment(event, orderNumber) {
+        event.preventDefault();
+        if (!window.SecondMarketOrdersAPI || this.state.actionLoading) return;
+
+        const form = new FormData(event.currentTarget);
+        const referenceNumber = (form.get("reference_number") || "").toString().trim();
+
+        try {
+            this.state.actionLoading = true;
+            this.render();
+            await window.SecondMarketOrdersAPI.confirmPayment(orderNumber, referenceNumber);
+            this.state.currentOrder = await window.SecondMarketOrdersAPI.getOrder(orderNumber);
+            await this.refreshOrders();
+            this.state.currentView = "detail";
+            this.syncBrowserUrl("detail", orderNumber);
+            this.showToast("Payment confirmed.");
+        } catch (error) {
+            this.showToast(window.SecondMarketOrdersAPI.formatError(error), "error");
+        } finally {
+            this.state.actionLoading = false;
+            this.render();
+        }
+    }
+
+    async payWithStripe(orderNumber) {
+        if (!window.SecondMarketOrdersAPI || this.state.actionLoading) return;
+
+        try {
+            this.state.actionLoading = true;
+            this.render();
+            const data = await window.SecondMarketOrdersAPI.getPaymentIntent(orderNumber);
+            const url = data?.intent?.checkout_url;
+            if (!url) {
+                throw new Error(data?.intent?.instructions || "Unable to open Stripe Checkout.");
+            }
+            this.showToast("Redirecting to Stripe Checkout...");
+            window.location.assign(url);
+        } catch (error) {
+            this.showToast(window.SecondMarketOrdersAPI.formatError(error), "error");
+        } finally {
+            this.state.actionLoading = false;
+            this.render();
+        }
+    }
+
     applyFilters(event) {
         event.preventDefault();
         const form = new FormData(event.currentTarget);
@@ -115,6 +164,35 @@ class SecondMarketOrdersApp {
             sort: (form.get("sort") || "recent").toString(),
         };
         this.refreshOrders();
+    }
+
+    async submitReturnRequest(event, orderNumber) {
+        event.preventDefault();
+        if (!window.SecondMarketOrdersAPI?.requestReturn || this.state.actionLoading) return;
+
+        const form = new FormData(event.currentTarget);
+        const reason = (form.get("reason") || "").toString().trim();
+        const description = (form.get("description") || "").toString().trim();
+
+        if (!reason || !description) {
+            this.showToast("Please choose a reason and describe the issue.", "error");
+            return;
+        }
+
+        try {
+            this.state.actionLoading = true;
+            this.render();
+            this.state.currentReturn = await window.SecondMarketOrdersAPI.requestReturn(orderNumber, {
+                reason,
+                description,
+            });
+            this.showToast("Return request submitted.");
+        } catch (error) {
+            this.showToast(window.SecondMarketOrdersAPI.formatError(error), "error");
+        } finally {
+            this.state.actionLoading = false;
+            this.render();
+        }
     }
 
     navigate(viewName) {
@@ -146,6 +224,13 @@ class SecondMarketOrdersApp {
             return this.templateCache[templateName];
         }
 
+        // Native HTML5 <template> discovery in DOM (Zero-latency instant in-memory lookup)
+        const nativeTemplate = document.getElementById(`template-${templateName}`);
+        if (nativeTemplate && nativeTemplate.tagName === "TEMPLATE") {
+            this.templateCache[templateName] = nativeTemplate.innerHTML.trim();
+            return this.templateCache[templateName];
+        }
+
         const request = new XMLHttpRequest();
         request.open("GET", `/orders/pages/${templateName}.html`, false);
         request.send(null);
@@ -159,7 +244,9 @@ class SecondMarketOrdersApp {
             `;
         }
 
-        this.templateCache[templateName] = request.responseText;
+        const responseText = request.responseText;
+        const templateMatch = responseText.match(/<template[^>]*>([\s\S]*?)<\/template>/i);
+        this.templateCache[templateName] = templateMatch ? templateMatch[1].trim() : responseText;
         return this.templateCache[templateName];
     }
 
@@ -228,11 +315,33 @@ class SecondMarketOrdersApp {
     }
 
     updateUserDisplay() {
+        const container = document.querySelector(".orders-user");
         const label = document.querySelector("[data-orders-user-name]");
-        if (!label) return;
-        label.textContent = this.state.user
-            ? `${this.state.user.first_name} ${this.state.user.last_name}`
-            : "Not signed in";
+        if (container) {
+            if (this.state.user) {
+                container.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:0.45rem;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span data-orders-user-name>${this.escapeHtml(this.state.user.first_name)} ${this.escapeHtml(this.state.user.last_name)}</span>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.8rem; font-weight:600;">
+                        <a href="/login.html" style="color:var(--orders-primary); text-decoration:none;">Log in</a>
+                        <span style="opacity:0.4;">|</span>
+                        <a href="/register.html" style="color:var(--orders-primary); text-decoration:none;">Sign up</a>
+                        <span data-orders-user-name style="display:none;">Not signed in</span>
+                    </div>
+                `;
+            }
+            return;
+        }
+        if (label) {
+            label.textContent = this.state.user
+                ? `${this.state.user.first_name} ${this.state.user.last_name}`
+                : "Not signed in";
+        }
     }
 
     updateNavigation() {
@@ -242,7 +351,25 @@ class SecondMarketOrdersApp {
     }
 
     statusBadge(status) {
-        return `<span class="orders-badge ${this.escapeAttribute(status)}">${this.escapeHtml(status)}</span>`;
+        const labels = {
+            not_ready: "Not Ready",
+            ready: "Ready",
+            shipped: "Shipped",
+            delivered: "Delivered",
+            returned: "Returned",
+            pending: "Pending",
+            confirmed: "Confirmed",
+            processing: "Processing",
+            paid: "Paid",
+            failed: "Failed",
+            refunded: "Refunded",
+            cancelled: "Cancelled",
+            gcash_pending: "GCash Pending",
+            cash_on_delivery: "Cash on Delivery",
+        };
+        const key = String(status || "").trim();
+        const display = labels[key] || key.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        return `<span class="orders-badge ${this.escapeAttribute(status)}">${this.escapeHtml(display)}</span>`;
     }
 
     actionDisabledAttribute() {
@@ -253,6 +380,7 @@ class SecondMarketOrdersApp {
         const container = document.getElementById("orders-toast-container");
         if (!container) return;
 
+        container.querySelectorAll(".orders-toast.is-error").forEach((el) => el.remove());
         const toast = document.createElement("div");
         toast.className = `orders-toast ${type === "error" ? "is-error" : ""}`;
         toast.textContent = message;
@@ -261,7 +389,7 @@ class SecondMarketOrdersApp {
     }
 
     formatPrice(price) {
-        return `PHP ${(price?.amount || 0).toLocaleString(undefined, {
+        return `₱${(price?.amount || 0).toLocaleString(undefined, {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
         })}`;

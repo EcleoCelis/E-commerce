@@ -1,7 +1,17 @@
 (function () {
     function renderWishlistView() {
-        const wishlistedProducts = this.state.products.filter((product) => this.state.wishlist.includes(product.id));
-        const emptyState = !this.state.marketplaceLoading && !this.state.marketplaceError && wishlistedProducts.length === 0 ? `
+        const wishlistProductMap = new Map();
+        (this.state.wishlistProducts || []).forEach((product) => {
+            if (product?.id) wishlistProductMap.set(product.id, product);
+        });
+        const wishlistedProducts = (this.state.wishlist || [])
+            .map((slug) => (
+                wishlistProductMap.get(slug)
+                || this.state.productDetails?.[slug]
+                || (this.state.products || []).find((product) => product.id === slug)
+            ))
+            .filter(Boolean);
+        const emptyState = !this.state.wishlistLoading && !this.state.marketplaceLoading && !this.state.marketplaceError && wishlistedProducts.length === 0 ? `
             <div class="text-center py-16 bg-white rounded border border-[#D7CEC1]">
                 <p class="text-sm text-[#776B56]">Your wishlist is currently empty.</p>
             </div>

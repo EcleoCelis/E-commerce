@@ -1,0 +1,22 @@
+<template id="template-moderation">
+<section class="admin-section" aria-labelledby="admin-moderation-title">
+    <div class="admin-section-header">
+        <div>
+            <h2 id="admin-moderation-title">Marketplace Moderation</h2>
+        </div>
+        <div class="admin-button-group">
+            <div class="analytics-segmented-toggle" role="tablist" aria-label="Moderation Queue">
+                <button type="button" role="tab" onclick="adminApp.setModerationTab('reports')" class="analytics-seg-btn {{reportsTabActive}}">Reports ({{reportsCount}})</button>
+                <button type="button" role="tab" onclick="adminApp.setModerationTab('reviews')" class="analytics-seg-btn {{reviewsTabActive}}">Reviews ({{reviewsCount}})</button>
+            </div>
+            <button type="button" onclick="adminApp.refreshModeration()" class="admin-button-secondary">Refresh</button>
+        </div>
+    </div>
+
+    {{moderationStatus}}
+
+    <div class="admin-moderation-body">
+        {{moderationContent}}
+    </div>
+</section>
+</template>

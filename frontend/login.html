@@ -4,41 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In | SecondMarket</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/typography.css">
     <link rel="stylesheet" href="/static/css/auth.css">
 </head>
 <body class="auth-page">
     <main class="auth-shell" aria-labelledby="login-title">
-        <a class="auth-brand" href="/">
-            <span class="auth-brand-mark" aria-hidden="true"></span>
-            SecondMarket
-        </a>
+        <div class="auth-top-bar">
+            <a class="auth-brand" href="/">
+                <span class="auth-brand-mark" aria-hidden="true"></span>
+                SecondMarket
+            </a>
+            <a class="auth-back-link" href="/">&larr; Back to Storefront</a>
+        </div>
 
         <section class="auth-panel">
-            <h1 id="login-title">Sign In</h1>
-            <p style="text-align:center; margin:0 0 1.5rem;">Access your buyer account, saved items, and order activity.</p>
+            <header class="auth-panel-header">
+                <span class="auth-eyebrow">Customer Portal</span>
+                <h1 id="login-title">Sign In</h1>
+                <p class="auth-subtitle">Access your buyer account, saved items, and order activity.</p>
+            </header>
 
             <div data-auth-message class="auth-message" role="status" aria-live="polite"></div>
 
             <form data-auth-form="login" data-auth-required-role="buyer" data-auth-success-url="/" class="auth-grid" novalidate>
                 <div class="auth-field">
                     <label for="login-email">Email Address</label>
-                    <input id="login-email" name="email" type="email" required autocomplete="email" class="form-input">
+                    <input id="login-email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" class="form-input">
                 </div>
                 <div class="auth-field">
-                    <label for="login-password">Password</label>
-                    <input id="login-password" name="password" type="password" required autocomplete="current-password" class="form-input">
+                    <div class="auth-label-row">
+                        <label for="login-password">Password</label>
+                        <button type="button" class="auth-text-link" data-auth-mode-switch="forgot" style="background:none;border:0;padding:0;cursor:pointer;font-size:0.82rem;">Forgot password?</button>
+                    </div>
+                    <div class="auth-password-wrap">
+                        <input id="login-password" name="password" type="password" required autocomplete="current-password" placeholder="Enter your password" class="form-input">
+                        <button type="button" class="auth-password-toggle" data-password-toggle="login-password" aria-label="Show password" aria-pressed="false">Show</button>
+                    </div>
                 </div>
                 <button type="submit" class="btn-primary">Sign In</button>
             </form>
 
-            <div class="auth-page-links">
-                <a class="btn-outline" href="/register.html">Create Buyer Account</a>
-                <a class="btn-outline" href="/admin/login.html">Admin Sign In</a>
-                <a class="btn-outline" href="/">Back To Storefront</a>
-            </div>
+            <form data-forgot-form class="auth-grid" hidden novalidate>
+                <div class="auth-field">
+                    <label for="forgot-email">Account Email</label>
+                    <input id="forgot-email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" class="form-input">
+                </div>
+                <button type="submit" class="btn-primary">Send Reset Instructions</button>
+                <div style="display:flex;justify-content:space-between;gap:1rem;font-size:0.85rem;">
+                    <button type="button" class="auth-text-link" data-auth-mode-switch="reset" style="background:none;border:0;padding:0;cursor:pointer;">Have a reset token?</button>
+                    <button type="button" class="auth-text-link" data-auth-mode-switch="login" style="background:none;border:0;padding:0;cursor:pointer;">Back to Sign In</button>
+                </div>
+            </form>
+
+            <form data-reset-form class="auth-grid" hidden novalidate>
+                <div class="auth-field">
+                    <label for="reset-token-input">Reset Token</label>
+                    <input id="reset-token-input" name="token" type="text" required autocomplete="off" placeholder="Paste your reset token" class="form-input">
+                </div>
+                <div class="auth-field">
+                    <label for="reset-new-password">New Password</label>
+                    <div class="auth-password-wrap">
+                        <input id="reset-new-password" name="new_password" type="password" required minlength="8" autocomplete="new-password" placeholder="At least 8 chars (upper, lower, number)" class="form-input">
+                        <button type="button" class="auth-password-toggle" data-password-toggle="reset-new-password" aria-label="Show password" aria-pressed="false">Show</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">Update Password</button>
+                <div style="text-align:right;font-size:0.85rem;">
+                    <button type="button" class="auth-text-link" data-auth-mode-switch="login" style="background:none;border:0;padding:0;cursor:pointer;">Back to Sign In</button>
+                </div>
+            </form>
+
+            <footer class="auth-footer">
+                <p class="auth-switch-prompt">
+                    Do not have account yet?
+                    <a class="auth-text-link" href="/register.html">Create one</a>
+                </p>
+            </footer>
         </section>
     </main>
 

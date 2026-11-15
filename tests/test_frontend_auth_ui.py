@@ -51,16 +51,26 @@ def test_login_and_register_pages_are_served_as_separate_files():
     admin_login_response = client.get("/admin/login.html")
     register_response = client.get("/register.html")
 
+    login_html = login_response.get_data(as_text=True)
+    register_html = register_response.get_data(as_text=True)
+
     assert login_response.status_code == 200
-    assert 'data-auth-form="login"' in login_response.get_data(as_text=True)
-    assert 'data-auth-required-role="buyer"' in login_response.get_data(as_text=True)
-    assert "/admin/login.html" in login_response.get_data(as_text=True)
-    assert "/static/js/auth-page.js" in login_response.get_data(as_text=True)
+    assert 'data-auth-form="login"' in login_html
+    assert 'data-auth-required-role="buyer"' in login_html
+    assert "/admin/login.html" not in login_html
+    assert "Admin Sign In" not in login_html
+    assert "Do not have account yet?" in login_html
+    assert "Create one" in login_html
+    assert "btn-outline" not in login_html
+    assert "/static/js/auth-page.js" in login_html
     assert admin_login_response.status_code == 200
     assert "Admin Seller Sign In" in admin_login_response.get_data(as_text=True)
     assert 'data-auth-required-role="admin"' in admin_login_response.get_data(as_text=True)
     assert 'data-auth-success-url="/admin"' in admin_login_response.get_data(as_text=True)
     assert "/static/js/auth-page.js" in admin_login_response.get_data(as_text=True)
     assert register_response.status_code == 200
-    assert 'data-auth-form="register"' in register_response.get_data(as_text=True)
-    assert "/static/js/auth-page.js" in register_response.get_data(as_text=True)
+    assert 'data-auth-form="register"' in register_html
+    assert "Have already an account?" in register_html
+    assert "Log in instead" in register_html
+    assert "btn-outline" not in register_html
+    assert "/static/js/auth-page.js" in register_html

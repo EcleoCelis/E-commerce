@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout | SecondMarket</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/typography.css">
     <link rel="stylesheet" href="/static/css/checkout/base.css">
 </head>
 <body class="checkout-page">
@@ -17,8 +15,9 @@
         </a>
 
         <nav class="checkout-steps" aria-label="Checkout steps">
-            <button type="button" data-checkout-nav="cart" onclick="checkoutApp.navigate('cart')" class="checkout-step is-active">Cart</button>
-            <button type="button" data-checkout-nav="summary" onclick="checkoutApp.navigate('summary')" class="checkout-step">Checkout</button>
+            <button type="button" data-checkout-nav="cart" onclick="checkoutApp.navigate('cart')" class="checkout-step is-active">1. Cart</button>
+            <button type="button" data-checkout-nav="summary" onclick="checkoutApp.navigate('summary')" class="checkout-step">2. Checkout</button>
+            <span data-checkout-nav="confirmation" class="checkout-step checkout-step-static" aria-current="false">3. Confirmed</span>
         </nav>
 
         <div class="checkout-user" aria-live="polite">
@@ -34,6 +33,183 @@
     </main>
 
     <div id="checkout-toast-container" class="checkout-toast-container" aria-live="polite"></div>
+
+    <!-- Native HTML5 Templates (Synchronized with /checkout/pages/*.html) -->
+    <template id="template-cart">
+        <section class="checkout-section" aria-labelledby="checkout-cart-title">
+            <div class="checkout-section-header">
+                <div>
+                    <p class="checkout-eyebrow">Step 1 of 3 &bull; Your Cart</p>
+                    <h1 id="checkout-cart-title">Review Saved Items</h1>
+                </div>
+                <a href="/" class="checkout-secondary-link">Continue Shopping</a>
+            </div>
+
+            {{cartStatus}}
+            {{cartAlertBanner}}
+
+            <div class="checkout-layout">
+                <section class="checkout-panel" aria-label="Cart items">
+                    <div class="checkout-panel-header">
+                        <h2>{{cartItemCount}} item(s) in your bag</h2>
+                    </div>
+                    <div class="checkout-cart-list">
+                        {{cartItems}}
+                    </div>
+                </section>
+
+                <aside class="checkout-summary-card" aria-label="Order summary">
+                    <p class="checkout-eyebrow">Estimated Summary</p>
+                    <div class="checkout-summary-breakdown">
+                        <div class="checkout-summary-row">
+                            <span>Subtotal</span>
+                            <strong>{{cartSubtotal}}</strong>
+                        </div>
+                        <div class="checkout-summary-row">
+                            <span>Estimated Shipping</span>
+                            <span>{{cartShippingEstimate}}</span>
+                        </div>
+                        <div class="checkout-summary-row checkout-summary-total">
+                            <span>Estimated Total</span>
+                            <strong>{{cartEstimatedTotal}}</strong>
+                        </div>
+                    </div>
+                    <p class="checkout-summary-note">{{shippingProgressNote}}</p>
+                    <button type="button" class="checkout-primary-button" onclick="checkoutApp.navigate('summary')" {{checkoutDisabled}}>Proceed To Checkout</button>
+                </aside>
+            </div>
+        </section>
+    </template>
+
+    <template id="template-summary">
+        <section class="checkout-section" aria-labelledby="checkout-summary-title">
+            <div class="checkout-section-header">
+                <div>
+                    <p class="checkout-eyebrow">Step 2 of 3 &bull; Review &amp; Pay</p>
+                    <h1 id="checkout-summary-title">Shipping And Payment</h1>
+                </div>
+                <button type="button" class="checkout-secondary-button" onclick="checkoutApp.navigate('cart')">Back To Cart</button>
+            </div>
+
+            {{cartStatus}}
+            {{summaryAlertBanner}}
+
+            <div class="checkout-layout">
+                <form id="checkout-summary-form" class="checkout-panel checkout-form" aria-label="Checkout details" onsubmit="checkoutApp.submitCheckout(event)" novalidate>
+                    <div class="checkout-panel-header">
+                        <h2>Delivery Details</h2>
+                        <a href="/profile?tab=addresses" class="checkout-secondary-link checkout-compact-link">Manage Addresses</a>
+                    </div>
+
+                    {{savedAddressesSelector}}
+
+                    <label class="checkout-field">
+                        <span>Recipient Name <abbr title="required">*</abbr></span>
+                        <input name="recipient_name" type="text" autocomplete="name" placeholder="Full name" required>
+                        <span class="checkout-field-error" data-error-for="shipping_address.recipient_name"></span>
+                    </label>
+                    <label class="checkout-field">
+                        <span>Mobile Number <abbr title="required">*</abbr></span>
+                        <input name="phone" type="tel" autocomplete="tel" placeholder="09XX XXX XXXX" required>
+                        <span class="checkout-field-error" data-error-for="shipping_address.phone"></span>
+                    </label>
+                    <label class="checkout-field checkout-field-wide">
+                        <span>Street Address <abbr title="required">*</abbr></span>
+                        <input name="address_line1" type="text" autocomplete="street-address" placeholder="House number, street, barangay" required>
+                        <span class="checkout-field-error" data-error-for="shipping_address.address_line1"></span>
+                    </label>
+                    <label class="checkout-field checkout-field-wide">
+                        <span>Apartment, Landmark, or Instructions</span>
+                        <input name="address_line2" type="text" placeholder="Optional unit number, landmark, or delivery note">
+                    </label>
+                    <label class="checkout-field">
+                        <span>City / Municipality <abbr title="required">*</abbr></span>
+                        <input name="city" type="text" autocomplete="address-level2" placeholder="City" required>
+                        <span class="checkout-field-error" data-error-for="shipping_address.city"></span>
+                    </label>
+                    <label class="checkout-field">
+                        <span>Province <abbr title="required">*</abbr></span>
+                        <input name="province" type="text" autocomplete="address-level1" placeholder="Province" required>
+                        <span class="checkout-field-error" data-error-for="shipping_address.province"></span>
+                    </label>
+                    <label class="checkout-field">
+                        <span>Postal Code <abbr title="required">*</abbr></span>
+                        <input name="postal_code" type="text" autocomplete="postal-code" placeholder="Postal code" required>
+                        <span class="checkout-field-error" data-error-for="shipping_address.postal_code"></span>
+                    </label>
+
+                    {{saveAddressToggle}}
+
+                    <div class="checkout-field checkout-field-wide checkout-section-divider">
+                        <div class="checkout-subpanel-header">
+                            <span>Shipping Method</span>
+                        </div>
+                        <div class="checkout-shipping-method-box">
+                            <div>
+                                <strong>Standard Express Delivery</strong>
+                                <p>Tracked courier delivery across the Philippines. Complimentary on orders ₱3,000+.</p>
+                            </div>
+                            <strong>{{shippingLabel}}</strong>
+                        </div>
+                    </div>
+
+                    <div class="checkout-field checkout-field-wide checkout-section-divider">
+                        <div class="checkout-subpanel-header">
+                            <span>Payment Method <abbr title="required">*</abbr></span>
+                            <a href="/profile?tab=payments" class="checkout-inline-link">Payment Preferences</a>
+                        </div>
+                        <div class="checkout-payment-options" role="radiogroup" aria-label="Payment method">
+                            {{paymentMethodOptions}}
+                        </div>
+                        <span class="checkout-field-error" data-error-for="payment_method"></span>
+                        {{paymentMethodHint}}
+                    </div>
+                </form>
+
+                <aside class="checkout-summary-card" aria-label="Order summary">
+                    <p class="checkout-eyebrow">Order Review</p>
+                    <div class="checkout-summary-items">
+                        {{summaryItems}}
+                    </div>
+                    {{couponSection}}
+                    <div class="checkout-summary-breakdown">
+                        <div class="checkout-summary-row">
+                            <span>Subtotal ({{cartTotalItems}} item(s))</span>
+                            <strong>{{cartSubtotal}}</strong>
+                        </div>
+                        {{discountRow}}
+                        <div class="checkout-summary-row">
+                            <span>Shipping</span>
+                            <span>{{shippingLabel}}</span>
+                        </div>
+                        <div class="checkout-summary-row checkout-summary-total">
+                            <span>Total Payable</span>
+                            <strong>{{orderTotal}}</strong>
+                        </div>
+                    </div>
+                    <p class="checkout-summary-note">{{paymentNextStepNote}}</p>
+                    <button id="checkout-place-order-btn" form="checkout-summary-form" type="submit" class="checkout-primary-button" {{checkoutDisabled}}>Place Order</button>
+                    {{confirmationPanel}}
+                </aside>
+            </div>
+        </section>
+    </template>
+
+    <template id="template-confirmation">
+        <section class="checkout-section checkout-confirmation-view" aria-labelledby="checkout-confirm-title">
+            <div class="checkout-section-header">
+                <div>
+                    <p class="checkout-eyebrow">Step 3 of 3 &bull; Confirmation</p>
+                    <h1 id="checkout-confirm-title">{{confirmationHeading}}</h1>
+                </div>
+                <div class="checkout-confirm-header-actions">
+                    <a href="/" class="checkout-secondary-link">Continue Shopping</a>
+                </div>
+            </div>
+
+            {{confirmationBody}}
+        </section>
+    </template>
 
     <script src="/static/js/auth-client.js"></script>
     <script src="/static/js/checkout/checkout-api.js"></script>

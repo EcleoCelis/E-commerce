@@ -1,35 +1,220 @@
-<section class="admin-section" aria-labelledby="admin-dashboard-title">
-    <div class="admin-section-header">
-        <div>
-            <p class="admin-eyebrow">Overview</p>
-            <h2 id="admin-dashboard-title">Seller Dashboard</h2>
+<template id="template-dashboard">
+<section class="admin-section admin-analytics-dashboard" aria-labelledby="admin-dashboard-title">
+    <!-- Section 1: Dashboard Header -->
+    <div class="admin-dashboard-toolbar">
+        <div class="admin-toolbar-heading">
+            <div class="admin-eyebrow-row">
+                <h2 id="admin-dashboard-title">Business &amp; Operations Overview</h2>
+                <span class="admin-refresh-meta">{{lastUpdatedLabel}}</span>
+            </div>
         </div>
-        <button type="button" onclick="adminApp.refreshInventory()" class="admin-button-secondary">Refresh</button>
+        <div class="admin-dashboard-controls">
+            <div class="admin-filter-pill-bar" role="group" aria-label="Dashboard Date Range">
+                <button type="button" onclick="adminApp.setDashboardRange('all')" class="admin-pill-btn {{rangeAllActive}}">All Time</button>
+                <button type="button" onclick="adminApp.setDashboardRange('today')" class="admin-pill-btn {{rangeTodayActive}}">Today</button>
+                <button type="button" onclick="adminApp.setDashboardRange('7d')" class="admin-pill-btn {{range7dActive}}">7 Days</button>
+                <button type="button" onclick="adminApp.setDashboardRange('30d')" class="admin-pill-btn {{range30dActive}}">30 Days</button>
+                <button type="button" onclick="adminApp.setDashboardRange('90d')" class="admin-pill-btn {{range90dActive}}">90 Days</button>
+                <button type="button" onclick="adminApp.setDashboardRange('this_month')" class="admin-pill-btn {{rangeMonthActive}}">This Month</button>
+                <button type="button" onclick="adminApp.setDashboardRange('custom')" class="admin-pill-btn {{rangeCustomActive}}">Custom</button>
+            </div>
+            <button type="button" onclick="adminApp.refreshDashboard()" class="admin-btn-refresh" title="Reload live marketplace analytics">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                </svg>
+                <span>Refresh</span>
+            </button>
+        </div>
     </div>
 
-    <div class="admin-metrics-grid">
+    {{customDateControls}}
+    {{dashboardBanner}}
+
+    <!-- Section 2: Business KPI Overview -->
+    <div class="admin-metrics-grid admin-kpi-grid" aria-label="Key Performance Indicators">
         {{metricCards}}
+    </div>
+
+    <!-- Section 3: Primary Business Trends -->
+    <div class="admin-panel analytics-panel-primary">
+        <div class="admin-panel-header analytics-panel-header">
+            <div>
+                <h3>{{trendTitle}}</h3>
+                <span class="admin-muted analytics-subtitle">{{trendSubtitle}}</span>
+            </div>
+            <div class="analytics-header-actions">
+                <div class="analytics-segmented-toggle" role="group" aria-label="Trend Metric">
+                    <button type="button" onclick="adminApp.setRevenueChartMetric('revenue')" class="analytics-seg-btn {{metricRevActive}}">Net Collected Revenue</button>
+                    <button type="button" onclick="adminApp.setRevenueChartMetric('orders')" class="analytics-seg-btn {{metricOrdActive}}">Orders Placed</button>
+                </div>
+                <button type="button" onclick="adminApp.navigate('reports')" class="admin-text-button analytics-action-link">
+                    <span>Full Sales Report</span>
+                    <span aria-hidden="true">&rarr;</span>
+                </button>
+            </div>
+        </div>
+        {{trendStatsStrip}}
+        <div class="analytics-chart-body analytics-chart-trend">
+            {{revenueTrendChart}}
+        </div>
+    </div>
+
+    <!-- Section 4: Transaction and Fulfillment Analytics -->
+    <div class="admin-grid-2col analytics-grid-balanced">
+        <div class="admin-panel analytics-card">
+            <div class="admin-panel-header">
+                <div>
+                    <h3>Order Status Distribution</h3>
+                    <span class="admin-muted analytics-subtitle">Fulfillment breakdown across all orders in window</span>
+                </div>
+                <button type="button" onclick="adminApp.navigate('orders')" class="admin-text-button analytics-action-link">
+                    <span>All Orders</span>
+                    <span aria-hidden="true">&rarr;</span>
+                </button>
+            </div>
+            <div class="analytics-chart-body">
+                {{orderStatusDonut}}
+            </div>
+        </div>
+
+        <div class="admin-panel analytics-card">
+            <div class="admin-panel-header">
+                <div>
+                    <h3>Payment Methods &amp; Collection</h3>
+                    <span class="admin-muted analytics-subtitle">Settled payments vs pending Cash on Delivery &amp; failed attempts</span>
+                </div>
+                <span class="analytics-meta-pill">{{paidShareLabel}}</span>
+            </div>
+            <div class="analytics-chart-body">
+                {{paymentMethodsChart}}
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 5: Merchandise Performance -->
+    <div class="admin-grid-2col analytics-grid-balanced">
+        <div class="admin-panel analytics-card">
+            <div class="admin-panel-header">
+                <div>
+                    <h3>Top Ordered Products</h3>
+                    <span class="admin-muted analytics-subtitle">Ordered merchandise value &amp; quantity (excludes cancellations; includes pending COD)</span>
+                </div>
+                <button type="button" onclick="adminApp.navigate('reports')" class="admin-text-button analytics-action-link">
+                    <span>Sales Report</span>
+                    <span aria-hidden="true">&rarr;</span>
+                </button>
+            </div>
+            <div class="analytics-chart-body">
+                {{topProductsChart}}
+            </div>
+        </div>
+
+        <div class="admin-panel analytics-card">
+            <div class="admin-panel-header">
+                <div>
+                    <h3>Category Sales Mix</h3>
+                    <span class="admin-muted analytics-subtitle">Ordered merchandise value by category (derived from the same orders as Top Products)</span>
+                </div>
+                <button type="button" onclick="adminApp.navigate('categories')" class="admin-text-button analytics-action-link">
+                    <span>Categories</span>
+                    <span aria-hidden="true">&rarr;</span>
+                </button>
+            </div>
+            <div class="analytics-chart-body">
+                {{topCategoriesChart}}
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 6: Customer Analytics and Operational Monitoring -->
+    <div class="admin-grid-2col analytics-grid-balanced">
+        <div class="admin-panel analytics-card">
+            <div class="admin-panel-header">
+                <div>
+                    <h3>Customer Acquisition &amp; Retention</h3>
+                    <span class="admin-muted analytics-subtitle">Account signups over time and first-time vs returning buyers</span>
+                </div>
+                <span class="analytics-meta-pill">{{retentionBadge}}</span>
+            </div>
+            {{customerSummaryPills}}
+            <div class="analytics-chart-body analytics-chart-compact">
+                {{customerAcquisitionChart}}
+            </div>
+        </div>
+
+        <div class="admin-panel analytics-card">
+            <div class="admin-panel-header">
+                <div>
+                    <h3>Operational Attention Queue</h3>
+                    <span class="admin-muted analytics-subtitle">Live marketplace queues requiring review or fulfillment</span>
+                </div>
+                <span class="analytics-meta-pill {{attentionPillTone}}">{{attentionTotalLabel}}</span>
+            </div>
+            <div class="analytics-ops-grid">
+                {{operationalInsightsCards}}
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 7: Detailed Management Records -->
+    <div class="admin-panel">
+        <div class="admin-panel-header">
+            <div>
+                <h3>Low Stock Alerts</h3>
+                <span class="admin-muted analytics-subtitle">Available listings with 1 or fewer units remaining</span>
+            </div>
+            <button type="button" onclick="adminApp.navigate('products')" class="admin-text-button analytics-action-link">
+                <span>Manage Products</span>
+                <span aria-hidden="true">&rarr;</span>
+            </button>
+        </div>
+        <div class="admin-table-wrap">
+            <table class="admin-table admin-table-compact">
+                <thead>
+                    <tr>
+                        <th scope="col">Product</th>
+                        <th scope="col" style="width: 130px;">Category</th>
+                        <th scope="col" style="width: 110px;">Condition</th>
+                        <th scope="col" class="admin-num-cell" style="width: 120px;">Price</th>
+                        <th scope="col" class="admin-num-cell" style="width: 130px;">Stock Left</th>
+                        <th scope="col" style="width: 130px; text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{lowStockRows}}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="admin-panel">
         <div class="admin-panel-header">
-            <h3>Recent Inventory</h3>
-            <button type="button" onclick="adminApp.navigate('products')" class="admin-text-button">Manage Products</button>
+            <div>
+                <h3>Recent Orders</h3>
+                <span class="admin-muted analytics-subtitle">Latest customer transactions requiring tracking or payment confirmation</span>
+            </div>
+            <button type="button" onclick="adminApp.navigate('orders')" class="admin-text-button analytics-action-link">
+                <span>All Orders</span>
+                <span aria-hidden="true">&rarr;</span>
+            </button>
         </div>
         <div class="admin-table-wrap">
-            <table class="admin-table">
+            <table class="admin-table admin-table-compact">
                 <thead>
                     <tr>
-                        <th scope="col">Product</th>
-                        <th scope="col">Category</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Qty</th>
+                        <th scope="col" style="width: 160px;">Order #</th>
+                        <th scope="col">Buyer</th>
+                        <th scope="col" style="width: 130px;">Placed</th>
+                        <th scope="col" class="admin-num-cell" style="width: 130px;">Total</th>
+                        <th scope="col" style="width: 140px;">Order Status</th>
+                        <th scope="col" style="width: 130px;">Payment</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{recentProductRows}}
+                    {{recentOrderRows}}
                 </tbody>
             </table>
         </div>
     </div>
 </section>
+</template>

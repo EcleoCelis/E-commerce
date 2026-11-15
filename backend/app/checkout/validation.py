@@ -1,7 +1,7 @@
 from backend.app.auth.validation import require_json_object
 
 
-SUPPORTED_PAYMENT_METHODS = {"cash_on_delivery", "gcash_pending"}
+SUPPORTED_PAYMENT_METHODS = {"cash_on_delivery", "gcash_pending", "credit_debit_card"}
 
 
 def clean_text(value):
@@ -40,9 +40,24 @@ def validate_checkout_draft_payload(payload):
     if not payment_method:
         errors.setdefault("payment_method", []).append("Payment method is required.")
     elif payment_method not in SUPPORTED_PAYMENT_METHODS:
-        errors.setdefault("payment_method", []).append("Payment method must be cash_on_delivery or gcash_pending.")
+        errors.setdefault("payment_method", []).append(
+            "Payment method must be cash_on_delivery, gcash_pending, or credit_debit_card."
+        )
+    else:
+        from backend.app.admin.settings import get_store_config
+
+        enabled = set(get_store_config().get("enabled_payment_methods") or SUPPORTED_PAYMENT_METHODS)
+        if payment_method not in enabled:
+            errors.setdefault("payment_method", []).append(
+                f"Payment method '{payment_method}' is currently disabled by store settings."
+            )
+
+    coupon_code = clean_text(payload.get("coupon_code")).upper() or None
+    idempotency_key = clean_text(payload.get("idempotency_key"))[:80] or None
 
     return {
         "shipping_address": shipping_address,
         "payment_method": payment_method,
+        "coupon_code": coupon_code,
+        "idempotency_key": idempotency_key,
     }, errors

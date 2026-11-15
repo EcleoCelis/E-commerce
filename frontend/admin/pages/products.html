@@ -1,55 +1,77 @@
+<template id="template-products">
 <section class="admin-section" aria-labelledby="admin-products-title">
-    <div class="admin-section-header">
+    <div class="admin-section-header admin-products-header">
         <div>
-            <p class="admin-eyebrow">Inventory</p>
-            <h2 id="admin-products-title">Product Listings</h2>
+            <h2 id="admin-products-title" class="admin-page-heading">Products Catalog</h2>
+            <p class="admin-page-subheading">Manage items, multi-variant pricing, inventory levels, and publication status.</p>
         </div>
-        <button type="button" class="admin-button-primary" disabled title="Full product form will be added after the inventory workflow is finalized">New Product</button>
+        <div class="admin-header-actions-group">
+            <button type="button" class="admin-btn-action-outline" onclick="adminApp.exportProductsCSV()" title="Export current products catalog to CSV">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>Export CSV</span>
+            </button>
+            <button type="button" class="admin-btn-action-outline" onclick="adminApp.importProductsCSV()" title="Import products from CSV">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>Import CSV</span>
+            </button>
+            <button type="button" class="admin-btn-primary-purple" onclick="adminApp.openProductModal()" title="Full product form will be added">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Add Product</span>
+            </button>
+        </div>
     </div>
 
-    <form class="admin-filter-bar" onsubmit="adminApp.applyProductFilters(event)">
-        <label class="admin-field">
-            <span>Search</span>
-            <input name="q" type="search" value="{{searchQuery}}" placeholder="Title, slug, brand, material">
-        </label>
-        <label class="admin-field">
-            <span>Status</span>
-            <select name="status">
+    <!-- Replicated Product Filters Bar -->
+    <form class="admin-saas-filter-bar" onsubmit="adminApp.applyProductFilters(event)">
+        <div class="admin-filter-search-box">
+            <svg class="admin-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input name="q" type="search" value="{{searchQuery}}" placeholder="Search by title, SKU, or tag..." class="admin-search-input-pill" oninput="adminApp.handleProductSearchInput(this.value)">
+        </div>
+
+        <div class="admin-filter-select-group">
+            <select name="category_slug" class="admin-select-pill" onchange="adminApp.applyProductFilterChange(this)">
+                <option value="all">All Categories</option>
+                {{categoryFilterOptions}}
+            </select>
+
+            <select name="status" class="admin-select-pill" onchange="adminApp.applyProductFilterChange(this)">
                 {{statusOptions}}
             </select>
-        </label>
-        <label class="admin-field">
-            <span>Condition</span>
-            <select name="condition">
-                {{conditionOptions}}
+
+            <select name="stock_level" class="admin-select-pill" onchange="adminApp.applyProductFilterChange(this)">
+                {{stockLevelOptions}}
             </select>
-        </label>
-        <label class="admin-field">
-            <span>Sort</span>
-            <select name="sort">
+
+            <select name="sort" class="admin-select-pill admin-sort-select" onchange="adminApp.applyProductFilterChange(this)">
                 {{sortOptions}}
             </select>
-        </label>
-        <button type="submit" class="admin-button-secondary">Apply</button>
+        </div>
+        <input type="hidden" name="condition" value="all">
     </form>
 
-    <div class="admin-panel">
-        <div class="admin-panel-header">
-            <h3>{{productCount}} products</h3>
-            <button type="button" onclick="adminApp.resetProductFilters()" class="admin-text-button">Reset Filters</button>
-        </div>
+    {{stockSummaryChips}}
+
+    <!-- Products Catalog Table Card -->
+    {{bulkActionBar}}
+    <div class="admin-saas-card">
         {{productStatus}}
         <div class="admin-table-wrap">
-            <table class="admin-table">
+            <table class="admin-table admin-saas-table">
                 <thead>
                     <tr>
-                        <th scope="col">Product</th>
-                        <th scope="col">Category</th>
-                        <th scope="col">Condition</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Quantity</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col" style="width: 38px;">
+                            <input type="checkbox" class="admin-checkbox" onchange="adminApp.toggleSelectAllProducts(this)" aria-label="Select all products">
+                        </th>
+                        <th scope="col" style="min-width: 260px;">PRODUCT</th>
+                        <th scope="col" style="width: 140px;">SKU</th>
+                        <th scope="col" style="width: 140px;">CATEGORY</th>
+                        <th scope="col" style="width: 110px;">PRICE</th>
+                        <th scope="col" style="width: 130px;">INVENTORY</th>
+                        <th scope="col" style="width: 120px;">STATUS</th>
+                        <th scope="col" style="width: 90px; text-align: right;">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,5 +79,272 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="admin-saas-table-footer">
+            <div class="admin-pagination-info">
+                {{paginationInfo}}
+            </div>
+            <div class="admin-pagination-pages">
+                {{paginationControls}}
+            </div>
+        </div>
+    </div>
+
+    <!-- Production 5-Tab Add / Edit Product Modal -->
+    <div id="admin-product-modal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-modal-product-title" style="display: none;">
+        <div class="admin-modal-backdrop" onclick="adminApp.closeProductModal()"></div>
+        <div class="admin-modal-dialog admin-modal-dialog-large">
+            <div class="admin-modal-header">
+                <h3 id="admin-modal-product-title">Add New Product</h3>
+                <button type="button" class="admin-modal-close" onclick="adminApp.closeProductModal()" aria-label="Close modal">&times;</button>
+            </div>
+
+            <!-- Modal Tab Navigation -->
+            <div class="admin-modal-nav-tabs" role="tablist">
+                <button type="button" class="admin-modal-tab-btn is-active" data-tab-name="basic" onclick="adminApp.setProductModalTab('basic')">Basic Info</button>
+                <button type="button" class="admin-modal-tab-btn" data-tab-name="pricing" onclick="adminApp.setProductModalTab('pricing')">Pricing &amp; Cost</button>
+                <button type="button" class="admin-modal-tab-btn" data-tab-name="inventory" onclick="adminApp.setProductModalTab('inventory')">Inventory</button>
+                <button type="button" class="admin-modal-tab-btn" data-tab-name="media" onclick="adminApp.setProductModalTab('media')">Media</button>
+                <button type="button" class="admin-modal-tab-btn" data-tab-name="variants" onclick="adminApp.setProductModalTab('variants')">Variants</button>
+            </div>
+
+            <form id="admin-product-form" class="admin-modal-form" novalidate onsubmit="adminApp.saveProduct(event)">
+                <div class="admin-modal-body">
+                    <!-- Tab 1: Basic Info -->
+                    <div id="admin-product-tab-basic" class="admin-tab-content is-active">
+                        <label class="admin-field">
+                            <span>Product Name <strong class="admin-required" aria-hidden="true">*</strong></span>
+                            <input data-admin-action id="admin-product-title" name="title" type="text" required placeholder="e.g. Kanso Oak Lounge Chair" oninput="adminApp.autoGenerateProductSlug(this.value)">
+                        </label>
+
+                        <div class="admin-form-row">
+                            <label class="admin-field">
+                                <span>URL Slug</span>
+                                <input data-admin-action id="admin-product-slug" name="slug" type="text" placeholder="kanso-oak-lounge-chair" oninput="this.dataset.manualEdited='true'">
+                            </label>
+                            <label class="admin-field">
+                                <span>Category <strong class="admin-required" aria-hidden="true">*</strong></span>
+                                <select data-admin-action id="admin-product-category" name="category_slug" required>
+                                    {{categoryModalOptions}}
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="admin-form-row">
+                            <label class="admin-field">
+                                <span>Product Status</span>
+                                <select data-admin-action id="admin-product-status" name="status">
+                                    <option value="available" selected>Active (Published to Store)</option>
+                                    <option value="draft">Draft</option>
+                                    <option value="hidden">Hidden / Archived</option>
+                                    <option value="reserved">Reserved</option>
+                                </select>
+                            </label>
+                            <label class="admin-field">
+                                <span>Item Condition <strong class="admin-required" aria-hidden="true">*</strong></span>
+                                <select data-admin-action id="admin-product-condition" name="condition">
+                                    <option value="like_new" selected>Like New</option>
+                                    <option value="good">Good</option>
+                                    <option value="fair">Fair</option>
+                                    <option value="new_other">Open Box / New Other</option>
+                                    <option value="for_repair">For Parts / Repair</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="admin-form-row">
+                            <label class="admin-field">
+                                <span>Tags (comma separated)</span>
+                                <input data-admin-action id="admin-product-tags" name="tags" type="text" placeholder="e.g. new, featured, workspace">
+                            </label>
+                            <label class="admin-field">
+                                <span>Short Summary</span>
+                                <input data-admin-action id="admin-product-summary" name="short_summary" type="text" placeholder="Brief 1-sentence synopsis for catalog cards">
+                            </label>
+                        </div>
+
+                        <label class="admin-field">
+                            <span>Full Description <strong class="admin-required" aria-hidden="true">*</strong></span>
+                            <textarea data-admin-action id="admin-product-desc" name="description" rows="4" required placeholder="Detailed product story, material composition, care instructions..."></textarea>
+                        </label>
+                    </div>
+
+                    <!-- Tab 2: Pricing & Cost -->
+                    <div id="admin-product-tab-pricing" class="admin-tab-content">
+                        <div class="admin-form-row-3">
+                            <label class="admin-field">
+                                <span>Regular Price (₱) <strong class="admin-required" aria-hidden="true">*</strong></span>
+                                <input data-admin-action id="admin-product-price" name="price" type="number" step="0.01" min="0" required placeholder="95" oninput="adminApp.calculatePricingMargin()">
+                            </label>
+                            <label class="admin-field">
+                                <span>Sale / Compare-at Price (₱)</span>
+                                <input data-admin-action id="admin-product-compare-price" name="compare_price" type="number" step="0.01" min="0" placeholder="Leave blank if not on sale">
+                            </label>
+                            <label class="admin-field">
+                                <span>Cost per Item (₱)</span>
+                                <input data-admin-action id="admin-product-cost" name="cost" type="number" step="0.01" min="0" placeholder="40" oninput="adminApp.calculatePricingMargin()">
+                                <span class="admin-field-hint">Customers won't see this. Used for margin calculations.</span>
+                            </label>
+                        </div>
+
+                        <div class="admin-profit-calc-card">
+                            <div class="admin-profit-stat-block">
+                                <span class="admin-profit-label">Estimated Profit</span>
+                                <strong id="admin-pricing-estimated-profit" class="admin-profit-val-green">₱55.00</strong>
+                            </div>
+                            <div class="admin-profit-stat-divider"></div>
+                            <div class="admin-profit-stat-block">
+                                <span class="admin-profit-label">Profit Margin</span>
+                                <strong id="admin-pricing-profit-margin" class="admin-profit-val-purple">57.9%</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Inventory -->
+                    <div id="admin-product-tab-inventory" class="admin-tab-content">
+                        <div class="admin-form-row-3">
+                            <label class="admin-field">
+                                <span>SKU (Stock Keeping Unit) <strong class="admin-required" aria-hidden="true">*</strong></span>
+                                <input data-admin-action id="admin-product-sku" name="sku" type="text" placeholder="e.g. SKU-8073">
+                            </label>
+                            <label class="admin-field">
+                                <span>Available Quantity <strong class="admin-required" aria-hidden="true">*</strong></span>
+                                <input data-admin-action id="admin-product-quantity" name="quantity" type="number" min="0" step="1" value="20" required>
+                            </label>
+                            <label class="admin-field">
+                                <span>Low Stock Threshold</span>
+                                <input data-admin-action id="admin-product-threshold" name="low_stock_threshold" type="number" min="0" step="1" value="5">
+                            </label>
+                        </div>
+
+                        <div class="admin-switch-row">
+                            <label class="admin-toggle-switch">
+                                <input type="checkbox" id="admin-product-track-inventory" checked>
+                                <span class="admin-toggle-slider"></span>
+                            </label>
+                            <span class="admin-toggle-label">Track inventory quantity for this product</span>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Media -->
+                    <div id="admin-product-tab-media" class="admin-tab-content">
+                        <input type="file" id="admin-product-file-input" accept="image/*" multiple style="display: none;" onchange="adminApp.handleProductMediaFileSelected(this)">
+                        
+                        <div id="admin-product-media-dropzone" class="admin-file-dropzone" onclick="document.getElementById('admin-product-file-input').click()" ondragover="adminApp.handleProductMediaDragOver(event)" ondragleave="adminApp.handleProductMediaDragLeave(event)" ondrop="adminApp.handleProductMediaDrop(event)">
+                            <div class="admin-dropzone-icon">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            </div>
+                            <div class="admin-dropzone-content">
+                                <p class="admin-dropzone-prompt"><strong>Click to upload product images</strong> or drag and drop</p>
+                                <p class="admin-dropzone-hint">PNG, JPG, WebP, SVG up to 30MB. First image is used as primary listing card.</p>
+                            </div>
+                        </div>
+
+                        <div id="admin-product-media-gallery" class="admin-product-media-gallery">
+                            <!-- Populated dynamically with product image cards -->
+                        </div>
+                    </div>
+
+                    <!-- Tab 5: Variants -->
+                    <div id="admin-product-tab-variants" class="admin-tab-content">
+                        <p class="admin-muted" style="margin: 0 0 1rem; font-size: 0.86rem;">Add multiple variations of this product (e.g., color, size, wood finish).</p>
+                        <div id="admin-product-variants-list" class="admin-variants-list">
+                            <!-- Populated dynamically with variant items -->
+                        </div>
+                        <button type="button" class="admin-btn-action-outline" onclick="adminApp.addProductVariantRow()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>Add Variant</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="admin-modal-footer">
+                    <button type="button" class="admin-btn-modal-cancel" onclick="adminApp.closeProductModal()">Cancel</button>
+                    <button data-admin-action type="submit" id="admin-product-submit-btn" class="admin-btn-modal-submit">Create Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Production Products CSV Import Modal -->
+    <div id="admin-csv-import-modal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-modal-csv-title" style="display: none;">
+        <div class="admin-modal-backdrop" onclick="adminApp.closeCsvImportModal()"></div>
+        <div class="admin-modal-dialog" style="max-width: 38rem; width: 95%;">
+            <div class="admin-modal-header">
+                <h3 id="admin-modal-csv-title">Import Products from CSV</h3>
+                <button type="button" class="admin-modal-close" onclick="adminApp.closeCsvImportModal()" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="admin-modal-body" style="display: flex; flex-direction: column; gap: 1rem; padding: 1.5rem;">
+                <p class="admin-muted" style="margin: 0; font-size: 0.85rem; line-height: 1.5;">
+                    Upload a CSV file containing your product catalog. Columns should match: <br>
+                    <code style="background: #FAF8F5; border: 1px solid var(--admin-line); padding: 3px 6px; border-radius: 4px; font-size: 0.78rem; display: inline-block; margin-top: 4px;">Title, SKU, Category, Condition, Price, CompareAtPrice, Quantity, Status</code>
+                </p>
+
+                <div class="admin-field">
+                    <span>Select CSV File</span>
+                    <input type="file" id="admin-csv-file-input" accept=".csv,text/csv" onchange="adminApp.handleCsvFileSelected(event)" style="padding: 0.5rem; border: 1px dashed var(--admin-line); border-radius: var(--radius-md); background: #FAF8F5; width: 100%;">
+                </div>
+
+                <div id="admin-csv-preview-area" style="display: none; border: 1px solid var(--admin-line); border-radius: var(--radius-md); padding: 0.75rem; background: #FAF8F5;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <strong id="admin-csv-preview-count" style="font-size: 0.82rem; color: #4E4638;">0 items detected</strong>
+                        <span id="admin-csv-preview-status" style="font-size: 0.75rem; color: #776B56;">Ready to import</span>
+                    </div>
+                    <div id="admin-csv-preview-list" style="max-height: 160px; overflow-y: auto; font-size: 0.75rem; font-family: monospace; color: #4E4638; background: #FFF; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--admin-line);">
+                    </div>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-modal-cancel" onclick="adminApp.closeCsvImportModal()">Cancel</button>
+                <button type="button" id="admin-csv-import-submit-btn" class="admin-btn-modal-submit" onclick="adminApp.executeCsvImport()" disabled>Import Items</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Stock Movement Ledger Modal -->
+    <div id="admin-stock-movements-modal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-stock-movements-title" style="display: none;">
+        <div class="admin-modal-backdrop" onclick="adminApp.closeProductMovementsModal()"></div>
+        <div class="admin-modal-dialog" style="max-width: 50rem; width: 95%;">
+            <div class="admin-modal-header">
+                <h3 id="admin-stock-movements-title">Stock Movement Ledger</h3>
+                <button type="button" class="admin-modal-close" onclick="adminApp.closeProductMovementsModal()" aria-label="Close modal">&times;</button>
+            </div>
+            <div id="admin-stock-movements-body" class="admin-modal-body" style="padding: 1.25rem 1.5rem; max-height: 65vh; overflow-y: auto;">
+                {{stockMovementsModalBody}}
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-modal-cancel" onclick="adminApp.closeProductMovementsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permanent Delete Product Confirmation Modal -->
+    <div id="admin-delete-product-modal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-delete-product-title" style="display: none;">
+        <div class="admin-modal-backdrop" onclick="adminApp.closeDeleteProductModal()"></div>
+        <div class="admin-delete-modal-dialog">
+            <div class="admin-delete-modal-header">
+                <div class="admin-delete-modal-title-group">
+                    <span class="admin-delete-warning-icon" aria-hidden="true">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </span>
+                    <h3 id="admin-delete-product-title">Permanently Delete Product?</h3>
+                </div>
+                <button type="button" class="admin-modal-close" onclick="adminApp.closeDeleteProductModal()" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="admin-delete-modal-body">
+                <p id="admin-delete-product-warning-text">
+                    Are you sure you want to permanently delete this product? This action cannot be undone.
+                </p>
+            </div>
+            <div class="admin-delete-modal-footer">
+                <button type="button" class="admin-btn-modal-cancel" onclick="adminApp.closeDeleteProductModal()">Cancel</button>
+                <button type="button" class="admin-btn-danger-red" id="admin-confirm-delete-product-btn" onclick="adminApp.confirmPermanentDeleteProducts()">Permanently Delete</button>
+            </div>
+        </div>
     </div>
 </section>
+</template>

@@ -1,0 +1,66 @@
+<template id="template-customers">
+<section class="admin-section admin-customers-page" aria-labelledby="admin-customers-title">
+    <div class="admin-page-header">
+        <div class="admin-page-title-group">
+            <h1 id="admin-customers-title" class="admin-page-title">Customers</h1>
+            <p class="admin-page-subtitle">Inspect buyer profiles, order lifetime value, saved addresses, and account security.</p>
+        </div>
+        <div class="admin-header-actions">
+            <button type="button" class="admin-button-secondary" onclick="adminApp.refreshCustomers()">Refresh</button>
+        </div>
+    </div>
+
+    {{kpiStrip}}
+
+    <div class="admin-orders-toolbar-card">
+        <form class="admin-orders-toolbar" onsubmit="adminApp.applyCustomerFilters(event)">
+            <div class="admin-orders-search-wrapper">
+                <svg class="admin-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input
+                    type="search"
+                    name="q"
+                    class="admin-search-input"
+                    placeholder="Search by customer name, email, or phone..."
+                    value="{{searchQuery}}"
+                    aria-label="Search customers by name, email, or phone"
+                >
+            </div>
+            <div class="admin-orders-filters-group">
+                <select name="status" class="admin-select-pill" aria-label="Account status filter">
+                    {{statusOptions}}
+                </select>
+                <select name="sort" class="admin-select-pill" aria-label="Sort customers">
+                    {{sortOptions}}
+                </select>
+                <button type="submit" class="admin-btn admin-btn-primary">Apply</button>
+                <button type="button" class="admin-btn admin-btn-secondary" onclick="adminApp.resetCustomerFilters()">Reset</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="admin-panel">
+        <div class="admin-panel-header">
+            <h3>{{customerCountLabel}}</h3>
+        </div>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Customer</th>
+                        <th scope="col">Contact &amp; Verification</th>
+                        <th scope="col" class="admin-th-numeric">Orders</th>
+                        <th scope="col" class="admin-th-numeric">Lifetime Spend</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Joined</th>
+                        <th scope="col" style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{customerRows}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{{customerDrawer}}
+</template>

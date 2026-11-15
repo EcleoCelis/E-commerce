@@ -1,57 +1,83 @@
-<section class="admin-section" aria-labelledby="admin-orders-title">
-    <div class="admin-section-header">
-        <div>
-            <p class="admin-eyebrow">Fulfillment</p>
-            <h2 id="admin-orders-title">Order Management</h2>
+<template id="template-orders">
+<section class="admin-section admin-orders-page" aria-labelledby="admin-orders-title">
+    <div class="admin-page-header">
+        <div class="admin-page-title-group">
+            <h1 id="admin-orders-title" class="admin-page-title">Orders</h1>
+            <p class="admin-page-subtitle">Track, manage, and fulfill customer orders.</p>
         </div>
-        <a href="/orders" class="admin-button-secondary">Buyer Order View</a>
+        <div class="admin-header-actions">
+            <button type="button" class="admin-btn admin-btn-secondary" onclick="adminApp.exportOrdersCSV()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>Export Orders CSV</span>
+            </button>
+        </div>
     </div>
 
-    <form class="admin-filter-bar admin-filter-bar-compact" onsubmit="adminApp.applyOrderFilters(event)">
-        <label class="admin-field">
-            <span>Order Status</span>
-            <select name="status">
-                {{statusOptions}}
-            </select>
-        </label>
-        <label class="admin-field">
-            <span>Payment</span>
-            <select name="payment_status">
-                {{paymentOptions}}
-            </select>
-        </label>
-        <label class="admin-field">
-            <span>Shipping</span>
-            <select name="shipping_status">
-                {{shippingOptions}}
-            </select>
-        </label>
-        <label class="admin-field">
-            <span>Sort</span>
-            <select name="sort">
-                {{sortOptions}}
-            </select>
-        </label>
-        <button type="submit" class="admin-button-secondary">Apply</button>
-    </form>
+    <!-- Orders Filter & Search Toolbar -->
+    <div class="admin-orders-toolbar-card">
+        <form id="admin-orders-filter-form" class="admin-orders-toolbar" onsubmit="adminApp.applyOrderFilters(event)">
+            <div class="admin-orders-search-wrapper">
+                <svg class="admin-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input
+                    type="search"
+                    name="q"
+                    class="admin-search-input"
+                    placeholder="Search by order #, customer..."
+                    value="{{searchQuery}}"
+                    oninput="adminApp.debounceOrderSearch(this.value)"
+                    aria-label="Search orders by order number or customer"
+                >
+            </div>
 
-    <div class="admin-panel">
-        <div class="admin-panel-header">
-            <h3>{{orderCount}} orders</h3>
-            <button type="button" onclick="adminApp.resetOrderFilters()" class="admin-text-button">Reset Filters</button>
-        </div>
+            <div class="admin-orders-filter-group">
+                <div class="admin-select-wrapper">
+                    <select name="payment_status" class="admin-select-control" onchange="adminApp.applyOrderFilters(event)" aria-label="Filter by payment status">
+                        {{paymentOptions}}
+                    </select>
+                </div>
+
+                <div class="admin-select-wrapper">
+                    <select name="fulfillment_status" class="admin-select-control" onchange="adminApp.applyOrderFilters(event)" aria-label="Filter by fulfillment status">
+                        {{fulfillmentOptions}}
+                    </select>
+                </div>
+
+                <div class="admin-select-wrapper">
+                    <select name="date_range" class="admin-select-control" onchange="adminApp.applyOrderFilters(event)" aria-label="Filter by date range">
+                        {{dateRangeOptions}}
+                    </select>
+                </div>
+
+                <!-- Hidden accessible selects to preserve contract with API tests and legacy query filters -->
+                <div style="display:none;" aria-hidden="true">
+                    <select name="shipping_status">{{shippingOptions}}</select>
+                    <select name="status">{{statusOptions}}</select>
+                    <select name="sort">{{sortOptions}}</select>
+                    <button type="submit">Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Orders Table Panel -->
+    {{orderBulkActionBar}}
+    <div class="admin-panel admin-orders-table-panel">
         {{orderStatus}}
         <div class="admin-table-wrap">
             <table class="admin-table admin-orders-table">
                 <thead>
                     <tr>
-                        <th scope="col">Order</th>
-                        <th scope="col">Buyer</th>
-                        <th scope="col">Total</th>
-                        <th scope="col">Order Status</th>
-                        <th scope="col">Payment</th>
-                        <th scope="col">Shipping</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col" style="width: 38px;">
+                            <input type="checkbox" class="admin-checkbox" onchange="adminApp.toggleSelectAllOrders(this)" aria-label="Select all orders">
+                        </th>
+                        <th scope="col">ORDER ID</th>
+                        <th scope="col">CUSTOMER</th>
+                        <th scope="col">DATE</th>
+                        <th scope="col">ITEMS</th>
+                        <th scope="col">TOTAL</th>
+                        <th scope="col">PAYMENT</th>
+                        <th scope="col">FULFILLMENT</th>
+                        <th scope="col" class="text-right">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,7 +85,14 @@
                 </tbody>
             </table>
         </div>
+        <div class="admin-orders-pagination-bar">
+            <span class="admin-pagination-info">{{orderPaginationInfo}}</span>
+            <div class="admin-pagination-controls">
+                {{orderPaginationControls}}
+            </div>
+        </div>
     </div>
 
     {{orderDetail}}
 </section>
+</template>

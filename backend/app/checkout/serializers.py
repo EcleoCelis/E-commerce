@@ -1,4 +1,5 @@
 from backend.app.cart.serializers import serialize_cart
+from backend.app.checkout.payment_service import payment_service
 from backend.app.marketplace.serializers import format_price
 
 
@@ -7,6 +8,7 @@ def serialize_checkout_draft(draft):
         "cart": serialize_cart(draft["cart"]),
         "shipping_address": draft["shipping_address"],
         "payment_method": draft["payment_method"],
+        "coupon_code": draft.get("coupon_code"),
         "items": [
             {
                 "product_id": item.product_id,
@@ -21,12 +23,14 @@ def serialize_checkout_draft(draft):
         "totals": {
             "subtotal": format_price(draft["subtotal_cents"]),
             "shipping": format_price(draft["shipping_cents"]),
+            "discount": format_price(draft.get("discount_cents", 0)),
             "total": format_price(draft["total_cents"]),
         },
     }
 
 
 def serialize_order_confirmation(order):
+    payment_method = order.payments[0].method if order.payments else "cash_on_delivery"
     return {
         "order": {
             "id": order.id,
@@ -34,8 +38,10 @@ def serialize_order_confirmation(order):
             "status": order.status,
             "payment_status": order.payment_status,
             "shipping_status": order.shipping_status,
+            "coupon_code": order.coupon_code,
             "subtotal": format_price(order.subtotal_cents),
             "shipping": format_price(order.shipping_cents),
+            "discount": format_price(order.discount_cents or 0),
             "total": format_price(order.total_cents),
             "placed_at": order.placed_at.isoformat() if order.placed_at else None,
         },
@@ -54,6 +60,7 @@ def serialize_order_confirmation(order):
             "status": order.payments[0].status if order.payments else None,
             "amount": format_price(order.payments[0].amount_cents) if order.payments else format_price(0),
             "reference_number": order.payments[0].reference_number if order.payments else None,
+            "intent": payment_service.create_payment_intent(order, payment_method),
         },
         "shipping_address": {
             "recipient_name": order.shipping_record.recipient_name,

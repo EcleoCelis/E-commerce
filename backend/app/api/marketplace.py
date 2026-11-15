@@ -17,9 +17,37 @@ from backend.app.marketplace.service import (
     parse_marketplace_filters,
     remove_wishlist_item,
 )
+from backend.app.trust.serializers import (
+    serialize_product_report,
+    serialize_rating_summary,
+    serialize_review,
+)
+from backend.app.trust.service import (
+    TrustError,
+    check_review_eligibility,
+    create_product_report,
+    create_review,
+    get_product_rating_summary,
+    list_product_reviews,
+)
+from backend.app.trust.validation import (
+    parse_review_filters,
+    validate_report_payload,
+    validate_review_payload,
+)
 
 
 marketplace_bp = Blueprint("marketplace", __name__, url_prefix="/marketplace")
+
+
+def trust_error_response(error):
+    return error_response(
+        message=error.message,
+        status_code=error.status_code,
+        code=error.code,
+        details=error.details,
+    )
+
 
 
 @marketplace_bp.get("/categories")
@@ -125,3 +153,120 @@ def remove_from_wishlist(slug):
         data={"product_slug": slug},
         message="Product removed from wishlist.",
     )
+
+
+@marketplace_bp.get("/products/<slug>/reviews")
+def product_reviews(slug):
+    product = get_marketplace_product_by_slug(slug)
+    if product is None:
+        return error_response(
+            message="Product was not found.",
+            status_code=404,
+            code="product_not_found",
+        )
+
+    filters, errors = parse_review_filters(request.args)
+    if errors:
+        return error_response(
+            message="Request validation failed.",
+            status_code=422,
+            code="validation_error",
+            details=errors,
+        )
+
+    reviews = list_product_reviews(product, filters)
+    summary = get_product_rating_summary(product)
+
+    return success_response(
+        data=[serialize_review(review) for review in reviews],
+        meta={
+            "count": len(reviews),
+            "rating_summary": serialize_rating_summary(summary),
+        },
+    )
+
+
+@marketplace_bp.get("/products/<slug>/reviews/eligibility")
+@roles_required(Role.BUYER.value)
+def review_eligibility(slug):
+    product = get_marketplace_product_by_slug(slug)
+    if product is None:
+        return error_response(
+            message="Product was not found.",
+            status_code=404,
+            code="product_not_found",
+        )
+
+    is_eligible, order, reason = check_review_eligibility(g.current_user, product)
+    return success_response(
+        data={
+            "eligible": is_eligible,
+            "reason": reason,
+            "order_number": order.order_number if order else None,
+        }
+    )
+
+
+@marketplace_bp.post("/products/<slug>/reviews")
+@roles_required(Role.BUYER.value)
+def submit_review(slug):
+    product = get_marketplace_product_by_slug(slug)
+    if product is None:
+        return error_response(
+            message="Product was not found.",
+            status_code=404,
+            code="product_not_found",
+        )
+
+    payload, errors = validate_review_payload(request.get_json(silent=True))
+    if errors:
+        return error_response(
+            message="Request validation failed.",
+            status_code=422,
+            code="validation_error",
+            details=errors,
+        )
+
+    try:
+        review = create_review(g.current_user, product, payload)
+    except TrustError as error:
+        return trust_error_response(error)
+
+    return success_response(
+        data=serialize_review(review),
+        message="Review submitted successfully.",
+        status_code=201,
+    )
+
+
+@marketplace_bp.post("/products/<slug>/reports")
+@roles_required(Role.BUYER.value)
+def submit_product_report(slug):
+    product = get_marketplace_product_by_slug(slug)
+    if product is None:
+        return error_response(
+            message="Product was not found.",
+            status_code=404,
+            code="product_not_found",
+        )
+
+    payload, errors = validate_report_payload(request.get_json(silent=True))
+    if errors:
+        return error_response(
+            message="Request validation failed.",
+            status_code=422,
+            code="validation_error",
+            details=errors,
+        )
+
+    try:
+        report = create_product_report(g.current_user, product, payload)
+    except TrustError as error:
+        return trust_error_response(error)
+
+    return success_response(
+        data=serialize_product_report(report),
+        message="Product report submitted.",
+        status_code=201,
+    )
+

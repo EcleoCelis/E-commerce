@@ -14,6 +14,11 @@ def serialize_admin_category(category, product_count=0):
 
 def serialize_admin_product(product):
     primary_image = primary_image_for(product)
+    compare_cents = getattr(product, "compare_at_price_cents", None)
+    cost_cents = getattr(product, "cost_cents", None)
+    low_stock = getattr(product, "low_stock_threshold", None)
+    track_inv = getattr(product, "track_inventory", None)
+    variants = getattr(product, "variants_json", None)
 
     return {
         "id": product.id,
@@ -21,14 +26,22 @@ def serialize_admin_product(product):
         "slug": product.slug,
         "description": product.description,
         "price": format_price(product.price_cents),
+        "compare_at_price": format_price(compare_cents) if compare_cents is not None else None,
+        "cost": format_price(cost_cents) if cost_cents is not None else None,
         "condition": product.condition,
         "status": product.status,
         "quantity": product.quantity,
+        "low_stock_threshold": low_stock if low_stock is not None else 5,
+        "track_inventory": bool(track_inv) if track_inv is not None else True,
+        "variants": variants if isinstance(variants, list) else [],
+        "sku": product.sku,
         "brand": product.brand,
         "color": product.color,
         "material": product.material,
         "dimensions": product.dimensions,
         "listed_at": product.listed_at.isoformat() if product.listed_at else None,
+        "created_at": product.created_at.isoformat() if getattr(product, "created_at", None) else None,
+        "updated_at": product.updated_at.isoformat() if getattr(product, "updated_at", None) else None,
         "category": serialize_category(product.category),
         "seller": {
             "id": product.seller.id,

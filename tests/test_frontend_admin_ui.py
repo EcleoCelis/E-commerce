@@ -18,7 +18,11 @@ def test_admin_frontend_shell_is_served_separately():
     assert "/static/js/admin/pages/products-page.js" in html
     assert "/static/js/admin/pages/categories-page.js" in html
     assert "/static/js/admin/pages/orders-page.js" in html
+    assert "/static/js/admin/pages/moderation-page.js" in html
+    assert "/static/js/admin/pages/reports-page.js" in html
     assert 'data-admin-nav="orders"' in html
+    assert 'data-admin-nav="moderation"' in html
+    assert 'data-admin-nav="reports"' in html
     assert "admin-main-content" in html
     assert "frontend/static/js/marketplace" not in html
 
@@ -40,6 +44,8 @@ def test_admin_frontend_assets_are_served_separately():
         "/static/js/admin/pages/products-page.js": "renderProductsPage",
         "/static/js/admin/pages/categories-page.js": "renderCategoriesPage",
         "/static/js/admin/pages/orders-page.js": "renderOrdersPage",
+        "/static/js/admin/pages/moderation-page.js": "renderModerationPage",
+        "/static/js/admin/pages/reports-page.js": "renderReportsPage",
     }
 
     for asset_path, expected_text in expected_assets.items():
@@ -65,6 +71,8 @@ def test_admin_page_templates_are_served_separately():
         "/admin/pages/products.html": "{{productRows}}",
         "/admin/pages/categories.html": "{{categoryRows}}",
         "/admin/pages/orders.html": "{{orderRows}}",
+        "/admin/pages/moderation.html": "{{moderationContent}}",
+        "/admin/pages/reports.html": "{{reportMetricCards}}",
     }
 
     for template_path, expected_text in expected_templates.items():
@@ -107,6 +115,14 @@ def test_admin_frontend_client_targets_admin_api_contract():
     assert "getOrder" in javascript
     assert "updateProductStatus" in javascript
     assert "updateProductInventory" in javascript
+    assert "listReviews" in javascript
+    assert "updateReviewStatus" in javascript
+    assert "listReports" in javascript
+    assert "updateReportStatus" in javascript
+    assert "getDashboardKPIs" in javascript
+    assert "getSalesReport" in javascript
+    assert "getInventoryReport" in javascript
+    assert "getExportUrl" in javascript
     assert '`/categories/${encodeURIComponent(categorySlug)}`' in javascript
     assert '`/categories/${encodeURIComponent(categorySlug)}/status`' in javascript
     assert '`/products/${encodeURIComponent(productSlug)}/status`' in javascript

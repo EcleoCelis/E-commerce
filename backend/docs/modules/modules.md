@@ -20,11 +20,11 @@ SecondMarket is a web-based secondhand e-commerce system built with HTML, CSS, J
 | 05 | Admin Seller Management | Admin product lifecycle, category management, product images, availability, item condition, and secondhand inventory workflow. | Complete |
 | 06 | Cart & Checkout | Cart persistence, item availability validation, order summary, address capture, payment method selection, and checkout confirmation. | Complete |
 | 07 | Order & Fulfillment Management | Order creation, buyer order history, admin order list, status updates, cancellation rules, and fulfillment tracking. | Complete |
-| 08 | Reviews, Reports & Moderation | Verified-purchase reviews, ratings, product reports, and admin moderation. | Planned |
-| 09 | Notifications & Messaging | Account/order notifications and simple buyer-to-admin support messaging. | Planned |
-| 10 | Admin Dashboard & Reports | Sales, orders, customers, products, inventory, revenue, exportable reports, and marketplace KPIs. | Planned |
-| 11 | Security Hardening & QA | Input validation, CSRF/CORS policy, secure uploads, rate limiting, API tests, frontend checks, and regression testing. | Planned |
-| 12 | Deployment & Monitoring | Production configuration, database migration, backups, logging, health checks, deployment, and operational verification. | Planned |
+| 08 | Reviews, Reports & Moderation | Verified-purchase reviews, ratings, product reports, and admin moderation. | Complete |
+| 09 | Notifications & Messaging | Account/order notifications, email triggers, and buyer-to-admin support messaging. | Complete |
+| 10 | Admin Dashboard & Reports | Sales, orders, customers, products, inventory, revenue, exportable reports, and marketplace KPIs. | Complete |
+| 11 | Security Hardening & QA | Input validation, CSRF/CORS policy, secure uploads, rate limiting, API tests, frontend checks, and regression testing. | Complete |
+| 12 | Deployment & Monitoring | Production configuration, database migration, backups, logging, health checks, deployment, and operational verification. | Complete |
 
 ## Module 01 Acceptance Criteria
 
@@ -476,3 +476,189 @@ The buyer order frontend will be separate from marketplace and checkout files, w
 - `frontend/static/js/orders/pages/detail-page.js`: buyer order detail data binder.
 - `frontend/admin/pages/orders.html`: admin order list/detail template inside the admin seller workspace.
 - `frontend/static/js/admin/pages/orders-page.js`: admin order management data binder.
+
+## Module 08 Implementation Sequence
+
+### Step 1 - Trust Domain Foundation
+
+Create validation rules, serializers, and service logic for reviews, ratings, and product reports.
+
+- Files: `backend/app/trust/__init__.py`, `backend/app/trust/validation.py`, `backend/app/trust/serializers.py`, `backend/app/trust/service.py`, and `backend/docs/modules/modules.md`.
+- Purpose: provide verified-purchase eligibility queries, rating calculation, review creation, review status workflows, report creation, and report resolution primitives.
+- Integration: reuses Module 02 `Review` and `ProductReport` models; enforces rating bounds (1–5), allowed report reasons, allowed review statuses, and resolution tracking by admin users.
+- Verification: run `py -m pytest tests/test_trust_models.py`.
+- Status: complete.
+
+### Step 2 - Verified Purchase Reviews API
+
+Expose public review reading and authenticated verified review creation endpoints.
+
+- Files: `backend/app/api/marketplace.py`, `backend/app/marketplace/serializers.py`, `backend/app/trust/service.py`, `tests/test_reviews_api.py`, and `backend/docs/modules/modules.md`.
+- Purpose: allow visitors to read published reviews with summary aggregates and allow verified buyers to check review eligibility and submit reviews.
+- Integration: `GET /api/v1/marketplace/products/<slug>/reviews` returns published reviews and score breakdown; `GET /api/v1/marketplace/products/<slug>/reviews/eligibility` requires buyer session and verifies delivered order history; `POST /api/v1/marketplace/products/<slug>/reviews` rejects non-buyers, non-purchasers, and duplicate reviews.
+- Verification: run `py -m pytest tests/test_reviews_api.py`.
+- Status: complete.
+
+### Step 3 - Product Reporting and Moderation API
+
+Add product reporting for buyers and moderation controls for admins.
+
+- Files: `backend/app/api/marketplace.py`, `backend/app/api/admin.py`, `backend/app/trust/service.py`, `tests/test_moderation_api.py`, and `backend/docs/modules/modules.md`.
+- Purpose: let buyers report suspicious or misleading listings and let admin sellers moderate customer reviews and resolve product reports.
+- Integration: `POST /api/v1/marketplace/products/<slug>/reports` requires authenticated buyer; `GET /api/v1/admin/reviews` and `PATCH /api/v1/admin/reviews/<id>/status` allow review moderation; `GET /api/v1/admin/reports` and `PATCH /api/v1/admin/reports/<id>/status` allow resolving/dismissing reports.
+- Verification: run `py -m pytest tests/test_moderation_api.py tests/test_reviews_api.py`.
+- Status: complete.
+
+### Step 4 - Marketplace Reviews and Reporting Frontend Integration
+
+Connect the buyer product detail page to reviews, rating summary, and reporting actions.
+
+- Files: `frontend/static/js/marketplace-api.js`, `frontend/marketplace/pages/product-detail.html`, `frontend/static/js/marketplace/pages/product-detail-page.js`, `frontend/static/js/marketplace/app.js`, `frontend/orders/pages/detail.html`, `frontend/static/js/orders/pages/detail-page.js`, and `backend/docs/modules/modules.md`.
+- Purpose: display live star rating badges, verified reviews list, rating breakdown, report modal, and review submission dialog on the product detail page, as well as review links on delivered buyer order items.
+- Integration: calls `/api/v1/marketplace/products/<slug>/reviews` on PDP load; checks eligibility for logged-in buyers; opens report modal on click; order items in delivered orders link directly to write reviews.
+- Verification: run `py -m pytest tests/test_frontend_marketplace_ui.py tests/test_frontend_orders_ui.py`.
+- Status: complete.
+
+### Step 5 - Admin Moderation Workspace
+
+Provide a dedicated moderation workspace in the admin seller panel.
+
+- Files: `frontend/admin/index.html`, `frontend/admin/pages/moderation.html`, `frontend/static/js/admin/pages/moderation-page.js`, `frontend/static/js/admin/admin-api.js`, `frontend/static/js/admin/app.js`, `frontend/static/css/admin/base.css`, and `backend/docs/modules/modules.md`.
+- Purpose: enable admin sellers to switch between Product Reports and Reviews Moderation, filter by status, review details, change review visibility, and resolve or dismiss reports.
+- Integration: admin nav includes `Moderation` (`data-admin-nav="moderation"`); loads `/admin/pages/moderation.html`; calls `/api/v1/admin/reviews` and `/api/v1/admin/reports`; triggers status patches with instant feedback.
+- Verification: run `py -m pytest tests/test_frontend_admin_ui.py`.
+- Status: complete.
+
+### Step 6 - Module 08 Completion Check
+
+Review and verify the complete review, report, and moderation scope before marking Module 08 complete.
+
+- Files: `tests/test_review_moderation_module_completion.py`, Module 08 backend/frontend files, and `backend/docs/modules/modules.md`.
+- Purpose: confirm verified purchase restrictions, rating breakdowns, reporting workflows, moderation permissions, modular frontend page templates, and regression coverage.
+- Verification: run `py -m pytest tests/test_review_moderation_module_completion.py tests/test_reviews_api.py tests/test_moderation_api.py`.
+- Status: complete.
+
+## Module 08 Frontend Structure
+
+The reviews and moderation frontend preserves the separation of buyer marketplace and admin seller spaces.
+
+- `frontend/marketplace/pages/product-detail.html`: product detail template extended with customer reviews section, rating breakdown bars, verified badges, report listing button, and accessible modals.
+- `frontend/static/js/marketplace/pages/product-detail-page.js`: PDP data binder for star ratings, breakdown bars, verified reviews list, and review/report modal state.
+- `frontend/static/js/marketplace-api.js`: marketplace client extended with `listProductReviews`, `checkReviewEligibility`, `submitReview`, and `submitProductReport`.
+- `frontend/static/js/marketplace/app.js`: buyer app state, review eligibility checking, modal management, and submission handling.
+- `frontend/orders/pages/detail.html`: buyer order detail template with item review action links on delivered orders.
+- `frontend/static/js/orders/pages/detail-page.js`: buyer order detail data binder with delivered item review actions.
+- `frontend/admin/pages/moderation.html`: admin moderation workspace template with reports and reviews tab views, filters, and action panels.
+- `frontend/static/js/admin/pages/moderation-page.js`: admin moderation data binder for reports and reviews tables, status controls, and resolvers.
+- `frontend/static/js/admin/admin-api.js`: admin client extended with review and report listing and status update methods.
+- `frontend/static/js/admin/app.js`: admin app state, moderation navigation, filter handling, and action updates.
+- `frontend/static/css/admin/base.css`: moderation badge colors, button groups, and responsive styling.
+
+## Module 10 Implementation Sequence
+
+### Step 1 - Reports Domain & Analytics Service
+Build accurate calculation logic derived directly from transactional and inventory database models.
+- Files: `backend/app/reports/__init__.py`, `backend/app/reports/validation.py`, `backend/app/reports/serializers.py`, `backend/app/reports/service.py`.
+- Purpose: calculate gross revenue, net revenue (gross minus refunds), total orders, paid orders, average order value (AOV), active customers, inventory valuation, low stock threshold (< 2 units), top selling products, and top categories using direct SQL queries. Also provides streaming CSV generation for sales, inventory, and order records.
+- Integration: imports `backend.app.models` (Order, OrderItem, Product, Category, User) and supports date filters (`all`, `today`, `7d`, `30d`, `this_month`, `custom`).
+- Verification: unit and regression verified against database transactions.
+
+### Step 2 - Admin Reports REST API Endpoints
+Expose authenticated, role-guarded endpoints under `/api/v1/admin/reports`.
+- Files: `backend/app/api/reports.py`, `backend/app/api/__init__.py`, `tests/test_admin_reports_api.py`.
+- Purpose: provide RESTful access for executive dashboard metrics, sales performance, inventory valuation, and on-demand CSV data downloads.
+- Endpoints:
+  - `GET /api/v1/admin/reports/dashboard`: returns high-level KPIs, order status distribution, top products, top categories, low-stock items, and recent orders.
+  - `GET /api/v1/admin/reports/sales`: returns period revenue, units sold, daily breakdown, and itemized orders.
+  - `GET /api/v1/admin/reports/inventory`: returns SKU counts, units in stock, valuation, condition breakdown, and category itemization.
+  - `GET /api/v1/admin/reports/export`: streams formatted CSV files with `Content-Disposition: attachment; filename=...`.
+- Verification: run `py -m pytest tests/test_admin_reports_api.py`.
+
+### Step 3 - Module 10 Verification Suite
+Validate end-to-end data integrity and calculation accuracy.
+- Files: `tests/test_dashboard_reports_module_completion.py`.
+- Purpose: confirm that dashboard KPIs match exact database state across delivered, processing, and cancelled orders, with zero reliance on mocked statistics.
+- Verification: run `py -m pytest tests/test_admin_reports_api.py tests/test_dashboard_reports_module_completion.py`.
+
+### Step 4 - Admin Dashboard & Reports Frontend Integration
+Upgrade the admin panel with an executive dashboard and dedicated analytics workspace.
+- Files: `frontend/admin/index.html`, `frontend/admin/pages/dashboard.html`, `frontend/static/js/admin/pages/dashboard-page.js`, `frontend/admin/pages/reports.html`, `frontend/static/js/admin/pages/reports-page.js`, `frontend/static/js/admin/admin-api.js`, `frontend/static/js/admin/app.js`, `frontend/static/css/admin/base.css`.
+- Purpose: render live metric cards, interactive date range selectors, order distribution tables, low-stock alerts, sales vs. inventory reporting tabs, and one-click CSV file downloads.
+- Verification: run `py -m pytest tests/test_frontend_admin_ui.py`.
+
+## Module 10 Frontend Structure
+
+The reporting frontend lives inside the modular `frontend/admin/` architecture:
+- `frontend/admin/pages/dashboard.html`: executive dashboard template featuring KPI metric cards, date range filter pills, order status lifecycle breakdown, top selling products and categories, low stock alerts, and recent orders.
+- `frontend/static/js/admin/pages/dashboard-page.js`: dynamic data binder for dashboard KPIs, formatted monetary values (PHP), and stock alerts.
+- `frontend/admin/pages/reports.html`: dedicated reporting template featuring multi-tab view for Sales Performance vs. Inventory Valuation, date range filters, and export action buttons.
+- `frontend/static/js/admin/pages/reports-page.js`: reports data binder for daily sales trends, period orders, category valuation, and inventory itemization.
+- `frontend/static/js/admin/admin-api.js`: extended with `getDashboardKPIs`, `getSalesReport`, `getInventoryReport`, and `getExportUrl`.
+- `frontend/static/js/admin/app.js`: navigation dispatch for `reports`, view state management, filter handlers, and CSV download triggering.
+- `frontend/static/css/admin/base.css`: 2-column grid layout, filter pill bars, and responsive styling.
+
+
+
+## Module 09 Implementation Sequence - Notifications & Messaging
+
+### Step 1 - Communication Domain Models
+- Files: `backend/app/models/communication.py`, `backend/app/models/__init__.py`.
+- Purpose: Add `Notification`, `NotificationType`, `SupportTicket`, `SupportTicketStatus`, and `SupportMessage` models to enable in-app notifications and customer support threads.
+- Verification: Database migration `20261112_01_complete_backend_modules.py` verified with unit tests.
+
+### Step 2 - Communication Service & Transactional Email
+- Files: `backend/app/communication/service.py`, `backend/app/communication/email_service.py`, `backend/app/communication/__init__.py`.
+- Purpose: Deliver notifications to buyers and admins on key commerce lifecycle events (order placed, payment received, shipping dispatched, item delivered, return requested). Provide `TransactionalEmailService` with console/mock fallback and SMTP transport.
+
+### Step 3 - Notifications & Support REST APIs
+- Files: `backend/app/api/notifications.py`, `backend/app/api/support.py`, `backend/app/api/__init__.py`.
+- Endpoints:
+  - `GET /api/v1/notifications`: List current user notifications with unread counts.
+  - `GET /api/v1/notifications/unread-count`: Lightweight polling endpoint.
+  - `PATCH /api/v1/notifications/<id>/read`: Mark individual notification as read.
+  - `POST /api/v1/notifications/mark-all-read`: Mark all notifications read.
+  - `GET /api/v1/support/tickets`: List buyer support tickets.
+  - `POST /api/v1/support/tickets`: Create buyer support ticket.
+  - `GET /api/v1/support/tickets/<id>`: Get ticket messages.
+  - `POST /api/v1/support/tickets/<id>/messages`: Send reply in ticket thread.
+  - `GET /api/v1/admin/support/tickets`: Admin list and filter tickets.
+  - `PATCH /api/v1/admin/support/tickets/<id>/status`: Admin update ticket status.
+- Verification: `pytest tests/test_notifications_messaging_api.py`.
+
+## Module 11 Implementation Sequence - Security Hardening & QA
+
+### Step 1 - Security Configuration & HTTP Headers
+- Files: `backend/app/core/config.py`, `backend/app/core/security/headers.py`.
+- Purpose: Configure `MAX_CONTENT_LENGTH = 10MB`, register security response headers (`X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, `Content-Security-Policy`).
+
+### Step 2 - CORS & CSRF Protection
+- Files: `backend/app/core/security/csrf.py`, `backend/app/api/auth.py`.
+- Purpose: Provide environment-driven CORS configuration (`flask-cors`) and double-submit cookie / header CSRF protection (`generate_csrf_token`, `@csrf_protect` middleware).
+
+### Step 3 - Rate Limiting & Input Validation
+- Files: `backend/app/core/security/rate_limiter.py`.
+- Purpose: Thread-safe sliding window rate limiter decorator applied to `/api/v1/auth/login`, `/api/v1/auth/register`, `/api/v1/auth/forgot-password`, `/api/v1/marketplace/products/<slug>/reports`.
+
+### Step 4 - Secure File Uploads with Pillow
+- Files: `backend/app/core/security/uploads.py`.
+- Purpose: Image inspection, Pillow dimension validation (max 4096px), EXIF sanitization and raster re-encoding, SVG script/XXE detection, path traversal prevention.
+- Verification: `pytest tests/test_security_hardening.py`.
+
+## Module 12 Implementation Sequence - Deployment & Monitoring
+
+### Step 1 - Production WSGI Entrypoints
+- Files: `wsgi.py`, `gunicorn.conf.py`.
+- Purpose: Production-grade WSGI server configuration supporting Waitress (Windows) and multi-worker Gunicorn (Linux/containers).
+
+### Step 2 - Containerization
+- Files: `Dockerfile`, `.dockerignore`, `docker-compose.yml`.
+- Purpose: Multi-stage Docker build with non-root runtime `appuser`, automated curl healthchecks, and PostgreSQL service integration.
+
+### Step 3 - Health Checks & Structured JSON Logging
+- Files: `backend/app/api/health.py`, `backend/app/core/logging.py`.
+- Purpose: Liveness `/health` and deep readiness `/health/ready` database connectivity checks; structured JSON logging with `X-Request-ID` request tracking.
+
+### Step 4 - Database Operational Scripts
+- Files: `scripts/backup_db.py`, `scripts/restore_db.py`, `scripts/verify_deployment.py`.
+- Purpose: Automated PostgreSQL database backup/restore tools and deployment validation suite.
+- Verification: `pytest tests/test_deployment_monitoring.py` and `python scripts/verify_deployment.py`.

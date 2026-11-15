@@ -7,6 +7,7 @@ system_bp = Blueprint("system", __name__)
 
 
 @system_bp.get("/info")
+@system_bp.get("/metadata")
 def system_info():
     return success_response(
         {

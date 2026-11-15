@@ -1,0 +1,172 @@
+<div class="about-page max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 fade-in">
+    <div class="about-top-group">
+        <nav class="about-breadcrumb text-xs text-[#776B56] flex items-center gap-2" aria-label="Breadcrumb">
+            <a href="#" onclick="app.navigate('home'); return false;" class="hover:underline inline-flex items-center min-h-[44px] sm:min-h-0">Home</a>
+            <span aria-hidden="true">/</span>
+            <span class="text-[#4E4638] font-semibold">About SecondMarket</span>
+        </nav>
+
+        <!-- Modern Split Editorial About Hero -->
+        <section class="about-hero" aria-labelledby="about-page-title">
+            <div class="about-hero-grid">
+                <div class="about-hero-content">
+                    <span class="about-eyebrow-pill">
+                        <span class="about-eyebrow-dot" aria-hidden="true"></span>
+                        System Overview &amp; Engineering Team
+                    </span>
+                    <h1 id="about-page-title" class="about-title font-serif">Curated Secondhand Commerce, Engineered for Trust.</h1>
+                    <p class="about-lead">
+                        SecondMarket unites a curated buyer marketplace with an integrated admin seller workspace. Every listing pairs transparent condition grading and atomic stock control with verified payments and end-to-end order tracking.
+                    </p>
+                    <div class="about-hero-actions">
+                        <button type="button" onclick="app.navigate('shop')" class="btn-primary text-xs uppercase tracking-widest">
+                            Explore Catalog &rarr;
+                        </button>
+                        <a href="#about-developers" class="btn-outline text-xs uppercase tracking-widest inline-flex items-center justify-center">
+                            Meet the Developers
+                        </a>
+                    </div>
+                </div>
+
+                <div class="about-metrics-grid" aria-label="Platform highlights">
+                    <div class="about-metric-card">
+                        <span class="about-metric-label">Platform Build</span>
+                        <strong class="about-metric-value font-serif">{{appVersionLabel}}</strong>
+                        <span class="about-metric-note">{{apiVersionLabel}}</span>
+                    </div>
+                    <div class="about-metric-card">
+                        <span class="about-metric-label">Live Inventory</span>
+                        <strong class="about-metric-value font-serif">{{liveListingLabel}}</strong>
+                        <span class="about-metric-note">{{categoryCountLabel}}</span>
+                    </div>
+                    <div class="about-metric-card">
+                        <span class="about-metric-label">System Roles</span>
+                        <strong class="about-metric-value font-serif">Dual Role</strong>
+                        <span class="about-metric-note">Buyer &amp; Admin Seller</span>
+                    </div>
+                    <div class="about-metric-card">
+                        <span class="about-metric-label">Engineering Team</span>
+                        <strong class="about-metric-value font-serif">4 Builders</strong>
+                        <span class="about-metric-note">14 Core Modules</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- System Information & Architecture -->
+    <section class="about-section" aria-labelledby="about-system-heading">
+        <div class="about-section-header">
+            <span class="about-eyebrow">System Information</span>
+            <h2 id="about-system-heading" class="about-section-title font-serif">Architecture &amp; Core Capabilities</h2>
+            <p class="about-section-subtitle">Designed to connect secondhand product curation, inventory integrity, checkout processing, and seller analytics in one cohesive platform.</p>
+        </div>
+
+        <div class="about-system-grid">
+            <article class="about-panel">
+                <header class="about-panel-header">
+                    <div>
+                        <span class="about-panel-kicker">End-to-End Experience</span>
+                        <h3 class="about-panel-title font-serif">Platform Mission &amp; Workflow</h3>
+                    </div>
+                    <span class="about-panel-badge">Storefront + Admin</span>
+                </header>
+                <p class="about-panel-copy">
+                    Unlike informal classifieds, SecondMarket validates every stage of a pre-loved purchase—from condition verification and search discovery to stock-safe checkout and shipment tracking.
+                </p>
+                <ul class="about-highlights-list">
+                    <li class="about-highlight-card">
+                        <span class="about-highlight-index" aria-hidden="true">01</span>
+                        <div>
+                            <strong class="about-highlight-heading">Transparent Item Grading</strong>
+                            <p class="about-highlight-text">Clear condition tiers (Like New, Good Condition, Fair Value) paired with gallery imagery and seller specs.</p>
+                        </div>
+                    </li>
+                    <li class="about-highlight-card">
+                        <span class="about-highlight-index" aria-hidden="true">02</span>
+                        <div>
+                            <strong class="about-highlight-heading">Synchronized Buyer Journey</strong>
+                            <p class="about-highlight-text">Persistent wishlists, server-backed carts, multi-channel payments (COD &amp; GCash/E-Wallet), and live order tracking.</p>
+                        </div>
+                    </li>
+                    <li class="about-highlight-card">
+                        <span class="about-highlight-index" aria-hidden="true">03</span>
+                        <div>
+                            <strong class="about-highlight-heading">Dedicated Admin Seller Console</strong>
+                            <p class="about-highlight-text">Real-time KPI analytics, category and listing lifecycles, inventory protection, fulfillment updates, and CSV exports.</p>
+                        </div>
+                    </li>
+                </ul>
+            </article>
+
+            <article class="about-panel">
+                <header class="about-panel-header">
+                    <div>
+                        <span class="about-panel-kicker">Technology Foundation</span>
+                        <h3 class="about-panel-title font-serif">Technical Stack &amp; Specifications</h3>
+                    </div>
+                    <span class="about-panel-badge">{{apiVersionLabel}}</span>
+                </header>
+                <p class="about-panel-copy">
+                    Engineered on a clean layered architecture separating REST API blueprints, relational database constraints, and modular client-side views.
+                </p>
+                <dl class="about-spec-list">
+                    <div class="about-spec-row">
+                        <dt>Application</dt>
+                        <dd>{{appName}} ({{appVersionLabel}})</dd>
+                    </div>
+                    <div class="about-spec-row">
+                        <dt>Environment</dt>
+                        <dd>{{environmentLabel}} &bull; Active Storefront</dd>
+                    </div>
+                    <div class="about-spec-row">
+                        <dt>Backend Engine</dt>
+                        <dd>Python Flask REST API ({{apiVersionLabel}}) with modular domain services</dd>
+                    </div>
+                    <div class="about-spec-row">
+                        <dt>Database Layer</dt>
+                        <dd>PostgreSQL &amp; SQLAlchemy ORM with relational integrity</dd>
+                    </div>
+                    <div class="about-spec-row">
+                        <dt>Frontend UI</dt>
+                        <dd>Modular HTML templates, design-system CSS &amp; Vanilla ES6+ SPA views</dd>
+                    </div>
+                    <div class="about-spec-row">
+                        <dt>Security &amp; RBAC</dt>
+                        <dd>HttpOnly session cookies, role-based guards &amp; input validation</dd>
+                    </div>
+                </dl>
+            </article>
+        </div>
+    </section>
+
+    <!-- Developers & Contributions -->
+    <section id="about-developers" class="about-section" aria-labelledby="about-team-heading">
+        <div class="about-section-header">
+            <span class="about-eyebrow">Contributors</span>
+            <h2 id="about-team-heading" class="about-section-title font-serif">Developers &amp; Contributions</h2>
+            <p class="about-section-subtitle">Each team member designed and built dedicated modules spanning the buyer storefront, REST APIs, database persistence, and admin seller console.</p>
+        </div>
+
+        <div class="about-team-grid">
+            {{developerCards}}
+        </div>
+    </section>
+
+    <!-- Closing CTA Band -->
+    <section class="about-cta-band" aria-label="Explore SecondMarket">
+        <div class="about-cta-copy">
+            <span class="about-eyebrow">Continue Browsing</span>
+            <h2 class="about-cta-title font-serif">Ready to Explore Pre-Loved Finds?</h2>
+            <p class="about-cta-subtitle">Discover inspected furniture, electronics, fashion, and everyday essentials across active categories.</p>
+        </div>
+        <div class="about-cta-actions">
+            <button type="button" onclick="app.navigate('shop')" class="btn-primary text-xs uppercase tracking-widest">
+                Shop Full Catalog &rarr;
+            </button>
+            <button type="button" onclick="app.openInfoModal('support')" class="btn-outline text-xs uppercase tracking-widest">
+                Buyer Support
+            </button>
+        </div>
+    </section>
+</div>

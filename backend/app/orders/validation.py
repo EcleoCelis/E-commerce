@@ -7,7 +7,7 @@ SHIPPING_STATUS_VALUES = {status.value for status in ShippingStatus}
 
 ALLOWED_ORDER_TRANSITIONS = {
     OrderStatus.PENDING.value: {OrderStatus.CONFIRMED.value, OrderStatus.CANCELLED.value},
-    OrderStatus.CONFIRMED.value: {OrderStatus.PROCESSING.value, OrderStatus.CANCELLED.value},
+    OrderStatus.CONFIRMED.value: {OrderStatus.PROCESSING.value, OrderStatus.SHIPPED.value, OrderStatus.CANCELLED.value},
     OrderStatus.PROCESSING.value: {OrderStatus.SHIPPED.value, OrderStatus.CANCELLED.value},
     OrderStatus.SHIPPED.value: {OrderStatus.DELIVERED.value},
     OrderStatus.DELIVERED.value: set(),
@@ -29,7 +29,15 @@ ALLOWED_SHIPPING_TRANSITIONS = {
     ShippingStatus.RETURNED.value: set(),
 }
 
-FULFILLMENT_FIELDS = {"order_status", "payment_status", "shipping_status", "tracking_number"}
+FULFILLMENT_FIELDS = {
+    "order_status",
+    "payment_status",
+    "shipping_status",
+    "tracking_number",
+    "carrier",
+    "tracking_url",
+    "admin_notes",
+}
 CANCELLABLE_ORDER_STATUSES = {OrderStatus.PENDING.value, OrderStatus.CONFIRMED.value}
 CANCELLABLE_SHIPPING_STATUS = ShippingStatus.NOT_READY.value
 
@@ -68,14 +76,29 @@ def validate_fulfillment_payload(payload, order):
     if unexpected_fields:
         errors.setdefault("payload", []).append(f"Unsupported field(s): {', '.join(unexpected_fields)}.")
 
+    has_any_field = any(field in payload for field in FULFILLMENT_FIELDS if payload.get(field) is not None) or any(
+        field in payload for field in ("carrier", "tracking_url", "admin_notes")
+    )
     cleaned = {
         "order_status": clean_optional_text(payload.get("order_status")),
         "payment_status": clean_optional_text(payload.get("payment_status")),
         "shipping_status": clean_optional_text(payload.get("shipping_status")),
         "tracking_number": clean_optional_text(payload.get("tracking_number")),
+        "carrier": clean_optional_text(payload.get("carrier")),
+        "tracking_url": clean_optional_text(payload.get("tracking_url")),
+        "admin_notes": clean_optional_text(payload.get("admin_notes")),
     }
+    if cleaned["carrier"] and len(cleaned["carrier"]) > 120:
+        errors.setdefault("carrier", []).append("Carrier name must be 120 characters or fewer.")
+    if cleaned["tracking_url"]:
+        if len(cleaned["tracking_url"]) > 500:
+            errors.setdefault("tracking_url", []).append("Tracking URL must be 500 characters or fewer.")
+        elif not cleaned["tracking_url"].startswith(("http://", "https://")):
+            errors.setdefault("tracking_url", []).append("Tracking URL must start with http:// or https://.")
+    if cleaned["admin_notes"] and len(cleaned["admin_notes"]) > 4000:
+        errors.setdefault("admin_notes", []).append("Admin notes must be 4000 characters or fewer.")
 
-    if not any(value is not None for value in cleaned.values()):
+    if not has_any_field and not any(value is not None for value in cleaned.values()):
         errors.setdefault("payload", []).append("At least one fulfillment field is required.")
 
     validate_status_transition(

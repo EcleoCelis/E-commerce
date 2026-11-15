@@ -22,6 +22,38 @@ def test_storefront_references_marketplace_frontend_client():
     assert "MOCK_PRODUCTS" not in html
 
 
+def test_frontend_entry_pages_do_not_depend_on_cdn_assets():
+    app = create_app(TestingConfig)
+    client = app.test_client()
+
+    entry_pages = [
+        "/",
+        "/login.html",
+        "/register.html",
+        "/admin/login.html",
+        "/admin",
+        "/checkout",
+        "/orders",
+    ]
+    forbidden_external_assets = [
+        "cdn.",
+        "cdn/",
+        "tailwindcss.com",
+        "fonts.googleapis.com",
+        "fonts.gstatic.com",
+        "unpkg.com",
+        "jsdelivr.net",
+    ]
+
+    for page_path in entry_pages:
+        response = client.get(page_path)
+        html = response.get_data(as_text=True).lower()
+
+        assert response.status_code == 200
+        for forbidden_asset in forbidden_external_assets:
+            assert forbidden_asset not in html
+
+
 def test_marketplace_frontend_client_is_served():
     app = create_app(TestingConfig)
 
@@ -69,6 +101,9 @@ def test_storefront_includes_responsive_marketplace_polish():
 
     assert response.status_code == 200
     assert "marketplace-filter-panel" in css
+    assert "Local Tailwind-style fallback utilities" in css
+    assert ".flex { display: flex; }" in css
+    assert ".bg-\\[\\#4E4638\\]" in css
     assert ".marketplace-home-hero" in css
     assert "100svh - 7.5rem" in css
     assert "marketplace-card-image" in product_card_js
@@ -145,6 +180,7 @@ def test_marketplace_page_modules_are_served_separately():
         "/static/js/marketplace/pages/catalog-page.js": "renderShopView",
         "/static/js/marketplace/pages/product-detail-page.js": "renderPDPView",
         "/static/js/marketplace/pages/wishlist-page.js": "renderWishlistView",
+        "/static/js/marketplace/pages/about-page.js": "renderAboutView",
     }
 
     for asset_path, expected_text in expected_assets.items():
@@ -162,9 +198,81 @@ def test_marketplace_html_page_templates_are_served_separately():
         "/marketplace/pages/catalog.html": "{{productGrid}}",
         "/marketplace/pages/product-detail.html": "{{galleryButtons}}",
         "/marketplace/pages/wishlist.html": "{{wishlistGrid}}",
+        "/marketplace/pages/about.html": "{{developerCards}}",
     }
 
     for template_path, expected_text in expected_templates.items():
         response = client.get(template_path)
         assert response.status_code == 200
         assert expected_text in response.get_data(as_text=True)
+
+
+def test_storefront_hero_rotates_background_images_every_5000ms():
+    app = create_app(TestingConfig)
+    client = app.test_client()
+
+    index_html = client.get("/").get_data(as_text=True)
+    home_template = client.get("/marketplace/pages/home.html").get_data(as_text=True)
+    app_js = client.get("/static/js/marketplace/app.js").get_data(as_text=True)
+    css = client.get("/static/css/marketplace/base.css").get_data(as_text=True)
+
+    for html in (index_html, home_template):
+        assert 'id="home-hero-media"' in html
+        assert 'data-hero-slide="0"' in html
+        assert 'data-hero-slide="1"' in html
+        assert 'data-hero-slide="2"' in html
+        assert 'data-hero-slide="3"' in html
+        assert "/static/images/hero-furniture-editorial.jpg" in html
+        assert "/static/images/hero-furniture-dining.jpg" in html
+        assert "/static/images/hero-tech-devices.jpg" in html
+        assert "/static/images/hero-smartphones.jpg" in html
+
+    assert ".home-hero-slide" in css
+    assert ".home-hero-slide.is-active" in css
+    assert "this.heroSlideIntervalMs = 5000;" in app_js
+    assert "startHeroBackgroundSlideshow()" in app_js
+    assert "stopHeroBackgroundSlideshow()" in app_js
+    assert "advanceHeroBackgroundSlide()" in app_js
+
+    for asset in (
+        "/static/images/hero-furniture-editorial.jpg",
+        "/static/images/hero-furniture-editorial.webp",
+        "/static/images/hero-furniture-dining.jpg",
+        "/static/images/hero-furniture-dining.webp",
+        "/static/images/hero-tech-devices.jpg",
+        "/static/images/hero-tech-devices.webp",
+        "/static/images/hero-smartphones.jpg",
+        "/static/images/hero-smartphones.webp",
+    ):
+        resp = client.get(asset)
+        assert resp.status_code == 200
+
+
+def test_storefront_includes_dedicated_about_page_and_credits():
+    app = create_app(TestingConfig)
+    client = app.test_client()
+
+    index_html = client.get("/").get_data(as_text=True)
+    about_route_html = client.get("/about").get_data(as_text=True)
+    about_template = client.get("/marketplace/pages/about.html").get_data(as_text=True)
+    about_js = client.get("/static/js/marketplace/pages/about-page.js").get_data(as_text=True)
+    app_js = client.get("/static/js/marketplace/app.js").get_data(as_text=True)
+    css = client.get("/static/css/marketplace/base.css").get_data(as_text=True)
+
+    assert "<!DOCTYPE html>" in about_route_html
+    assert "/static/js/marketplace/pages/about-page.js" in index_html
+    assert 'id="template-about"' in index_html
+    assert "app.navigate('about')" in index_html
+    assert "{{developerCards}}" in index_html
+    assert "{{developerCards}}" in about_template
+    assert "case 'about':" in app_js
+    assert "renderAboutView()" in app_js
+    assert ".about-team-grid" in css
+
+    for developer_name in (
+        "Alexa Alegarbes",
+        "Richelle Jean Rosagaran",
+        "Diondell Apariccio",
+        "Jomarie Celis",
+    ):
+        assert developer_name in about_js

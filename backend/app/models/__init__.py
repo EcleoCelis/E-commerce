@@ -1,17 +1,30 @@
+from backend.app.models.admin import AdminAuditLog, InventoryMovement, StoreSetting
 from backend.app.models.catalog import Category, Product, ProductCondition, ProductImage, ProductStatus, WishlistItem
 from backend.app.models.commerce import (
     Cart,
     CartItem,
     CartStatus,
+    Coupon,
+    CouponRedemption,
+    DiscountType,
     Order,
     OrderItem,
     OrderStatus,
     Payment,
     PaymentStatus,
+    ReturnRequest,
+    ReturnStatus,
     ShippingRecord,
     ShippingStatus,
 )
-from backend.app.models.identity import AuthSession, User, UserStatus
+from backend.app.models.communication import (
+    Notification,
+    NotificationType,
+    SupportMessage,
+    SupportTicket,
+    SupportTicketStatus,
+)
+from backend.app.models.identity import Address, AuthSession, PasswordResetToken, User, UserStatus
 from backend.app.models.trust import (
     ProductReport,
     ReportReason,
@@ -22,14 +35,23 @@ from backend.app.models.trust import (
 
 
 __all__ = [
+    "Address",
+    "AdminAuditLog",
     "AuthSession",
     "Cart",
     "CartItem",
     "CartStatus",
     "Category",
+    "Coupon",
+    "CouponRedemption",
+    "DiscountType",
+    "InventoryMovement",
+    "Notification",
+    "NotificationType",
     "Order",
     "OrderItem",
     "OrderStatus",
+    "PasswordResetToken",
     "Payment",
     "PaymentStatus",
     "Product",
@@ -39,10 +61,16 @@ __all__ = [
     "ProductReport",
     "ReportReason",
     "ReportStatus",
+    "ReturnRequest",
+    "ReturnStatus",
     "Review",
     "ReviewStatus",
     "ShippingRecord",
     "ShippingStatus",
+    "StoreSetting",
+    "SupportMessage",
+    "SupportTicket",
+    "SupportTicketStatus",
     "User",
     "UserStatus",
     "WishlistItem",
