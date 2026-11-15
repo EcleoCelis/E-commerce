@@ -1,7 +1,7 @@
 import click
 
 from backend.app.extensions import db
-from backend.app.seed import seed_catalog_data, seed_development_data
+from backend.app.seed import ensure_admin_user, seed_catalog_data, seed_development_data
 
 
 def register_cli_commands(app):
@@ -37,3 +37,35 @@ def register_cli_commands(app):
             f"Catalog seed complete. Created users={created['users']}, "
             f"categories={created['categories']}, products={created['products']}."
         )
+
+    @app.cli.command("ensure-admin")
+    @click.option(
+        "--email",
+        default=None,
+        help="Admin email (defaults to SEED_ADMIN_EMAIL or admin@secondmarket.test).",
+    )
+    @click.option(
+        "--password",
+        default=None,
+        help="Admin password (defaults to SEED_ADMIN_PASSWORD).",
+    )
+    @click.option(
+        "--if-configured",
+        is_flag=True,
+        default=False,
+        help="Skip cleanly when SEED_ADMIN_PASSWORD is not configured.",
+    )
+    def ensure_admin(email, password, if_configured):
+        """Create or update an admin account from flags or SEED_ADMIN_* env vars."""
+        try:
+            result = ensure_admin_user(email=email, password=password)
+        except ValueError as exc:
+            raise click.ClickException(str(exc)) from exc
+
+        if result["action"] == "skipped":
+            if if_configured:
+                click.echo("Admin sync skipped: SEED_ADMIN_PASSWORD is not set.")
+                return
+            raise click.ClickException("Admin password is required via --password or SEED_ADMIN_PASSWORD.")
+
+        click.echo(f"Admin {result['action']}: {result['email']}.")

@@ -5,7 +5,7 @@ from pathlib import Path
 
 from backend.app.auth.rbac import Role
 from backend.app.extensions import db
-from backend.app.models import Category, Product, ProductCondition, ProductImage, ProductStatus, User
+from backend.app.models import Category, Product, ProductCondition, ProductImage, ProductStatus, User, UserStatus
 
 
 STARTER_CATEGORIES = (
@@ -264,3 +264,37 @@ def seed_catalog_data(only_if_empty=True):
 
     db.session.commit()
     return created
+
+
+def ensure_admin_user(email=None, password=None, first_name="SecondMarket", last_name="Admin"):
+    """Create or update an admin account using explicit args or SEED_ADMIN_* env vars."""
+    raw_email = email if email is not None else os.getenv("SEED_ADMIN_EMAIL", "admin@secondmarket.test")
+    raw_password = password if password is not None else os.getenv("SEED_ADMIN_PASSWORD", "")
+
+    clean_email = (raw_email or "").strip().lower()
+    clean_password = (raw_password or "").strip()
+    if not clean_email or not clean_password:
+        return {"action": "skipped", "email": clean_email or None}
+
+    user = User.query.filter_by(email=clean_email).one_or_none()
+    if user is None:
+        user = User(
+            email=clean_email,
+            role=Role.ADMIN.value,
+            status=UserStatus.ACTIVE.value,
+            email_verified=True,
+            first_name=first_name,
+            last_name=last_name,
+        )
+        user.set_password(clean_password)
+        db.session.add(user)
+        action = "created"
+    else:
+        user.role = Role.ADMIN.value
+        user.status = UserStatus.ACTIVE.value
+        user.email_verified = True
+        user.set_password(clean_password)
+        action = "updated"
+
+    db.session.commit()
+    return {"action": action, "email": user.email}
