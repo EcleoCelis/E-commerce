@@ -1,0 +1,545 @@
+{
+  "categories": [
+    {
+      "name": "Furniture",
+      "slug": "furniture",
+      "description": "Tables, chairs, sofas, cabinets, and home fixtures.",
+      "image_url": null,
+      "sort_order": 0
+    },
+    {
+      "name": "Fashion",
+      "slug": "fashion",
+      "description": "Secondhand clothing, shoes, bags, and accessories.",
+      "image_url": null,
+      "sort_order": 1
+    },
+    {
+      "name": "Camera",
+      "slug": "camera",
+      "description": "Pre-owned DSLR and mirrorless cameras with lenses.",
+      "image_url": "/static/uploads/categories/pexels-jibarofoto-637037_caf8493313.jpg",
+      "sort_order": 2
+    },
+    {
+      "name": "Dress",
+      "slug": "dress",
+      "description": "Secondhand dresses and sundresses.",
+      "image_url": "icon:box",
+      "sort_order": 3
+    },
+    {
+      "name": "Lighting",
+      "slug": "lighting",
+      "description": "Chandeliers, pendant lights, and table lamps.",
+      "image_url": "icon:candle",
+      "sort_order": 4
+    },
+    {
+      "name": "Smartphones",
+      "slug": "smartphones",
+      "description": "Pre-owned smartphones and mobile devices.",
+      "image_url": null,
+      "sort_order": 5
+    },
+    {
+      "name": "Headphones",
+      "slug": "headphones",
+      "description": "Pre-owned wireless and studio headphones.",
+      "image_url": "icon:box",
+      "sort_order": 6
+    },
+    {
+      "name": "Books",
+      "slug": "books",
+      "description": "Used books, references, learning materials, and collectibles.",
+      "image_url": null,
+      "sort_order": 7
+    }
+  ],
+  "products": [
+    {
+      "title": "Pre-Owned Wireless Headphones",
+      "slug": "pre-owned-wireless-headphones",
+      "description": "Comfortable over-ear headphones with clean ear pads and tested audio output.",
+      "price_cents": 185000,
+      "condition": "good",
+      "quantity": 1,
+      "brand": "SoundCore",
+      "color": "Black",
+      "material": "Plastic and leatherette",
+      "dimensions": null,
+      "category_slug": "headphones",
+      "images": [
+        {
+          "image_url": "/static/productImages/headphones/m502t0016_13june22_headphone_03.jpg",
+          "alt_text": "Black wireless headphones",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Secondhand Smartphone",
+      "slug": "secondhand-smartphone",
+      "description": "Unlocked smartphone with minor cosmetic wear and a clear display.",
+      "price_cents": 420000,
+      "condition": "good",
+      "quantity": 1,
+      "brand": "Android",
+      "color": "Black",
+      "material": "Glass and aluminum",
+      "dimensions": null,
+      "category_slug": "smartphones",
+      "images": [
+        {
+          "image_url": "/static/productImages/smartphones/330788-P9NVVS-165.jpg",
+          "alt_text": "Secondhand Smartphone",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Pre-Loved Student Backpack",
+      "slug": "pre-loved-student-backpack",
+      "description": "Gray student backpack with spacious compartments and light signs of use.",
+      "price_cents": 65000,
+      "condition": "good",
+      "quantity": 1,
+      "brand": "Campus",
+      "color": "Gray",
+      "material": "Canvas",
+      "dimensions": null,
+      "category_slug": "fashion",
+      "images": [
+        {
+          "image_url": "/static/productImages/bags/young-girl-with-gray-student-backpack.jpg",
+          "alt_text": "Gray student backpack",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Casual Denim Shorts",
+      "slug": "casual-denim-shorts",
+      "description": "Comfortable casual denim shorts in fair secondhand condition.",
+      "price_cents": 38000,
+      "condition": "fair",
+      "quantity": 1,
+      "brand": "Denim Co.",
+      "color": "Blue",
+      "material": "Denim",
+      "dimensions": null,
+      "category_slug": "fashion",
+      "images": [
+        {
+          "image_url": "/static/productImages/jeans/casual-men-short-pants.jpg",
+          "alt_text": "Casual denim shorts",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Sand Casual Shoes",
+      "slug": "sand-casual-shoes",
+      "description": "Neutral casual shoes with visible wear but plenty of life left.",
+      "price_cents": 90000,
+      "condition": "good",
+      "quantity": 1,
+      "brand": "Streetwalk",
+      "color": "Sand",
+      "material": "Synthetic leather",
+      "dimensions": null,
+      "category_slug": "fashion",
+      "images": [
+        {
+          "image_url": "/static/productImages/shoe/shoes-sand.jpg",
+          "alt_text": "Sand casual shoes",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Soft Sleepwear Set",
+      "slug": "soft-sleepwear-set",
+      "description": "Comfortable sleepwear set, washed and ready for reuse.",
+      "price_cents": 52000,
+      "condition": "like_new",
+      "quantity": 1,
+      "brand": "Homewear",
+      "color": "Light",
+      "material": "Cotton",
+      "dimensions": null,
+      "category_slug": "dress",
+      "images": [
+        {
+          "image_url": "/static/productImages/sleepware/e2818e87-ffaf-4391-9019-450bf92552af.jpg",
+          "alt_text": "Soft Sleepwear Set",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Minimal Analog Watch",
+      "slug": "minimal-analog-watch-cc51c0",
+      "description": "Secondhand Minimal Analog Watch in good condition.",
+      "price_cents": 120000,
+      "condition": "good",
+      "quantity": 59,
+      "brand": "Timewell",
+      "color": null,
+      "material": null,
+      "dimensions": null,
+      "category_slug": "fashion",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/11873_2d434eb252.jpg",
+          "alt_text": "Minimal Analog Watch",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "White Sofa",
+      "slug": "white-sofa",
+      "description": "Crafted with soft tissue of cotton, perfect for living room display. \n\nNote: Do not overuse, wash every 2 weeks in minimum",
+      "price_cents": 400000,
+      "condition": "like_new",
+      "quantity": 61,
+      "brand": "SKU-8271",
+      "color": null,
+      "material": "new",
+      "dimensions": "White sofa for you neat living room",
+      "category_slug": "furniture",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/contemporary-living-room_e7208371ee.jpg",
+          "alt_text": "White Sofa",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Nikon D7200 DSLR Camera with Nikkor AF-S 18-140mm Zoom Lens",
+      "slug": "nikon-d7200-dslr-camera-18-140mm",
+      "description": "Pre-owned Nikon DSLR camera body paired with an all-in-one Nikkor AF-S 18-140mm telephoto zoom lens. Supports 6 fps continuous burst shooting, crisp optical viewfinder framing, and full manual exposure controls for everyday and travel photography.",
+      "price_cents": 2499000,
+      "condition": "like_new",
+      "quantity": 3,
+      "brand": "Nikon",
+      "color": "Black",
+      "material": "Magnesium Alloy & Polycarbonate",
+      "dimensions": "135.5 x 106.5 x 76 mm",
+      "category_slug": "camera",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/nikon-d7200-dslr-camera-_fcc3307c20.jpg",
+          "alt_text": "Nikon DSLR camera with attached Nikkor zoom lens",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Canon EOS DSLR Camera with Telephoto Macro Lens",
+      "slug": "canon-eos-dslr-camera-macro-lens",
+      "description": "Clean, well-maintained Canon EOS DSLR camera equipped with a dedicated telephoto macro lens. Features dual top command dials, textured ergonomic grip, hot-shoe flash mount, and sharp manual/autofocus optics ready for portraits and close-up work.",
+      "price_cents": 2750000,
+      "condition": "like_new",
+      "quantity": 4,
+      "brand": "Canon",
+      "color": "Matte Black",
+      "material": "Polycarbonate & Aluminum Alloy",
+      "dimensions": "144 x 105 x 78 mm",
+      "category_slug": "camera",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/canon-eos-dslr-camera-ma_1d46a7dd15.jpg",
+          "alt_text": "Black Canon EOS DSLR camera with attached macro lens",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Canon EOS DSLR with EF-S 15-85mm f/3.5-5.6 IS USM Lens",
+      "slug": "canon-eos-ef-s-15-85mm-is-usm-kit",
+      "description": "Pre-owned Canon EOS DSLR camera fitted with the Canon EF-S 15-85mm f/3.5-5.6 IS USM image-stabilized wide-to-telephoto zoom lens and petal lens hood. Tested shutter, clean glass elements, and smooth zoom ring operation.",
+      "price_cents": 2980000,
+      "condition": "good",
+      "quantity": 2,
+      "brand": "Canon",
+      "color": "Black",
+      "material": "Reinforced Composite & Glass",
+      "dimensions": "148 x 110 x 81 mm",
+      "category_slug": "camera",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/canon-eos-ef-s-15-85mm-i_124b58d2e6.jpg",
+          "alt_text": "Canon EOS DSLR camera with EF-S 15-85mm zoom lens",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Fujifilm X-T10 Mirrorless Camera with XF 18-55mm f/2.8-4 OIS Lens",
+      "slug": "fujifilm-xt10-mirrorless-18-55mm-kit",
+      "description": "Classic black Fujifilm X-T10 APS-C mirrorless camera paired with the Fujinon XF 18-55mm f/2.8-4 R LM OIS zoom lens. Combines tactile metal shutter and exposure dials with Fujifilm film simulation color profiles in a compact travel body.",
+      "price_cents": 3150000,
+      "condition": "like_new",
+      "quantity": 3,
+      "brand": "Fujifilm",
+      "color": "Black",
+      "material": "Magnesium Alloy",
+      "dimensions": "118.4 x 82.8 x 40.8 mm",
+      "category_slug": "camera",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/fujifilm-xt10-mirrorless_fc3097fbcf.jpg",
+          "alt_text": "Fujifilm X-T10 black mirrorless digital camera with XF 18-55mm lens",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Tecno POVA Curve 5G (Silver Titanium, 256GB)",
+      "slug": "tecno-pova-curve-5g-silver-256gb",
+      "description": "Pre-owned Tecno POVA Curve 5G smartphone featuring an ultra-slim curved AMOLED display, futuristic brushed titanium back with dual rear cameras, 5G connectivity, and a long-lasting fast-charging battery. Fully factory reset and carrier unlocked.",
+      "price_cents": 1099000,
+      "condition": "like_new",
+      "quantity": 5,
+      "brand": "Tecno",
+      "color": "Silver Titanium",
+      "material": "Glass & Aluminum Frame",
+      "dimensions": "164.3 x 74.6 x 7.5 mm",
+      "category_slug": "smartphones",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/tecno-pova-curve-5g-silv_da5f4e3ff3.webp",
+          "alt_text": "Tecno POVA Curve 5G smartphone front and rear view",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Google Pixel 9 Pro Series Unlocked Dual-Edition Smartphone",
+      "slug": "google-pixel-9-pro-series-unlocked",
+      "description": "Unlocked Google Pixel 9 Pro & Pixel 9 Pro Fold family offering flagship Tensor AI photography, vibrant OLED display, and clean Android updates. Thoroughly inspected screen, battery health verified above 94%, and ready for any local SIM or eSIM.",
+      "price_cents": 3890000,
+      "condition": "like_new",
+      "quantity": 4,
+      "brand": "Google",
+      "color": "Coral / Sage Green",
+      "material": "Gorilla Glass Victus 2 & Aluminum",
+      "dimensions": "155.2 x 77.1 x 8.5 mm",
+      "category_slug": "smartphones",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/google-pixel-9-pro-serie_0ab11dc9e5.webp",
+          "alt_text": "Google Pixel smartphones in coral and sage green finishes",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "HONOR Magic Pro 5G Triple-Camera Smartphone (Sunset Orange)",
+      "slug": "honor-magic-pro-5g-sunset-orange",
+      "description": "Like-new HONOR 5G flagship smartphone in distinctive Sunset Orange finish with a triple-lens AI camera array, rounded alloy frame, and curved high-refresh display. Clean frame with zero cracks and verified battery health.",
+      "price_cents": 2850000,
+      "condition": "like_new",
+      "quantity": 3,
+      "brand": "HONOR",
+      "color": "Sunset Orange",
+      "material": "Satin Glass & Aluminum Frame",
+      "dimensions": "162.5 x 75.8 x 8.6 mm",
+      "category_slug": "smartphones",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/honor-magic-pro-5g-sunse_d2e9ed34cf.jpg",
+          "alt_text": "HONOR Sunset Orange 5G smartphone front and back",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Mocha Brown Tiered Backless Halter Maxi Sundress",
+      "slug": "mocha-brown-tiered-halter-maxi-sundress",
+      "description": "Breezy mocha-brown sleeveless tiered maxi sundress with adjustable halter tie straps, open-back elasticized band, and flowy three-tier skirt. Ideal for beach getaways, weekend brunch, and warm-weather casual wear.",
+      "price_cents": 78000,
+      "condition": "like_new",
+      "quantity": 6,
+      "brand": "Atelier Sol",
+      "color": "Mocha Brown",
+      "material": "Cotton-Linen Blend",
+      "dimensions": "Length: 132 cm",
+      "category_slug": "dress",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/mocha-brown-tiered-halte_f06fd1b989.webp",
+          "alt_text": "Mocha brown sleeveless tiered maxi sundress",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Mustard Yellow Tiered Backless Halter Maxi Sundress",
+      "slug": "mustard-yellow-tiered-halter-maxi-sundress",
+      "description": "Vibrant mustard-yellow sleeveless tiered maxi dress featuring a flattering scoop neckline, tie-back halter straps, and lightweight pleated ruffles that drape softly to ankle length. Worn once and freshly laundered.",
+      "price_cents": 78000,
+      "condition": "like_new",
+      "quantity": 5,
+      "brand": "Atelier Sol",
+      "color": "Mustard Yellow",
+      "material": "Breathable Cotton Blend",
+      "dimensions": "Length: 132 cm",
+      "category_slug": "dress",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/mustard-yellow-tiered-ha_0410ea6f31.jpg",
+          "alt_text": "Mustard yellow sleeveless tiered maxi sundress",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Butter Yellow Fitted Bodice Tiered Spaghetti-Strap Midi Dress",
+      "slug": "butter-yellow-tiered-midi-sundress",
+      "description": "Soft butter-yellow tiered midi dress with a princess-seamed fitted bodice, delicate spaghetti straps, and three-tier flared skirt. Fresh boutique staple perfect for garden events and sunny daytime styling.",
+      "price_cents": 89000,
+      "condition": "new_other",
+      "quantity": 8,
+      "brand": "Maison Belle",
+      "color": "Butter Yellow",
+      "material": "Textured Linen-Cotton",
+      "dimensions": "Length: 118 cm",
+      "category_slug": "dress",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/butter-yellow-tiered-mid_384f01e6bb.jpg",
+          "alt_text": "Pastel butter yellow tiered midi dress displayed on mannequin",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "8-Light Brushed Brass & Crystal Chandelier with Fabric Shades",
+      "slug": "brushed-brass-crystal-8-light-chandelier",
+      "description": "Statement 8-arm brushed brass and cut-crystal chandelier topped with pleated warm cream linen drum shades and gold-trimmed edges. Delivers soft ambient illumination for living rooms, dining halls, or boutique suites.",
+      "price_cents": 1150000,
+      "condition": "like_new",
+      "quantity": 2,
+      "brand": "Lumina Brass",
+      "color": "Brushed Gold & Cream",
+      "material": "Brass, Crystal & Linen Fabric",
+      "dimensions": "82 cm Diameter x 68 cm Height",
+      "category_slug": "lighting",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/brushed-brass-crystal-8-_f6452b8467.jpg",
+          "alt_text": "Gold and crystal 8-light chandelier with cream lamp shades in living room",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Sculptural Wave Linear LED Dining Pendant Light (120cm)",
+      "slug": "sculptural-wave-linear-led-pendant-light",
+      "description": "Architectural linear suspension lamp blending a matte charcoal aluminum beam, etched acrylic diffuser waves, and a spiraling warm-white LED ribbon. Suspended on twin adjustable steel cables for dining tables or conference desks.",
+      "price_cents": 685000,
+      "condition": "like_new",
+      "quantity": 4,
+      "brand": "Studio Kvadrat",
+      "color": "Matte Charcoal & Warm LED",
+      "material": "Anodized Aluminum & Optical Acrylic",
+      "dimensions": "120 x 18 x 120 cm (adjustable drop)",
+      "category_slug": "lighting",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/sculptural-wave-linear-l_1585a59e9c.jpg",
+          "alt_text": "Modern sculptural wave linear LED chandelier above wooden dining table",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Minimalist Black Halo Frame Frosted Globe Table Lamp",
+      "slug": "minimalist-black-halo-globe-table-lamp",
+      "description": "Compact architectural bedside and side-table lamp featuring a matte black steel cylinder base, open circular halo frame, and a frosted opal glass sphere emitting glare-free warm ambient light.",
+      "price_cents": 245000,
+      "condition": "like_new",
+      "quantity": 7,
+      "brand": "NordicForm",
+      "color": "Matte Black & Opal White",
+      "material": "Powder-Coated Steel & Frosted Glass",
+      "dimensions": "24 x 15 x 38 cm",
+      "category_slug": "lighting",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/minimalist-black-halo-gl_8edc6457af.jpg",
+          "alt_text": "Minimalist black halo frame table lamp with glowing opal globe",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Nordic Matte Grey Cone Pendant Light Pair (2-Piece Set)",
+      "slug": "nordic-matte-grey-cone-pendant-light-pair",
+      "description": "Matched pair of Scandinavian matte slate-grey spun-metal cone pendant lights with white inner reflectors for wide, even downward task lighting above sofas, kitchen islands, or reading nooks. Includes black cords and ceiling canopies.",
+      "price_cents": 360000,
+      "condition": "good",
+      "quantity": 5,
+      "brand": "NordicForm",
+      "color": "Matte Slate Grey",
+      "material": "Spun Aluminum",
+      "dimensions": "30 cm Shade Diameter x 22 cm Height (x2)",
+      "category_slug": "lighting",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/nordic-matte-grey-cone-p_49ffbd50fa.jpg",
+          "alt_text": "Pair of Nordic matte grey cone pendant lights above light grey sofa",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "title": "Studio Matte Black Over-Ear Wireless ANC Headphones",
+      "slug": "studio-matte-black-wireless-anc-headphones",
+      "description": "Pre-owned matte black over-ear wireless Bluetooth headphones featuring a stitched textured leather headband, plush memory-foam ear cushions, and signature white halo-ring earcups. Tested Bluetooth 5.3 pairing, crisp audio, and USB-C charging.",
+      "price_cents": 329000,
+      "condition": "like_new",
+      "quantity": 6,
+      "brand": "SoundCraft",
+      "color": "Matte Black / White Halo",
+      "material": "PU Leather & Matte ABS",
+      "dimensions": "19.5 x 17.0 x 8.2 cm",
+      "category_slug": "headphones",
+      "images": [
+        {
+          "image_url": "/static/uploads/products/studio-matte-black-wirel_40983ba985.jpg",
+          "alt_text": "Matte black over-ear wireless headphones with white halo ring accent",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ]
+    }
+  ]
+}

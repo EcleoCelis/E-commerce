@@ -1,3 +1,8 @@
+import json
+import os
+import secrets
+from pathlib import Path
+
 from backend.app.auth.rbac import Role
 from backend.app.extensions import db
 from backend.app.models import Category, Product, ProductCondition, ProductImage, ProductStatus, User
@@ -172,6 +177,88 @@ def seed_development_data():
                 is_primary=True,
             )
         )
+        db.session.add(product)
+        created["products"] += 1
+
+    db.session.commit()
+    return created
+
+
+def seed_catalog_data(only_if_empty=True):
+    """Populate starter catalog categories, products, and images from catalog_seed.json."""
+    created = {"users": 0, "categories": 0, "products": 0, "skipped": False}
+
+    if only_if_empty and (Category.query.count() > 0 or Product.query.count() > 0):
+        created["skipped"] = True
+        return created
+
+    seed_path = Path(__file__).resolve().with_name("catalog_seed.json")
+    payload = json.loads(seed_path.read_text(encoding="utf-8"))
+
+    seller = User.query.filter_by(role=Role.ADMIN.value).order_by(User.id.asc()).first()
+    if seller is None:
+        admin_email = os.getenv("SEED_ADMIN_EMAIL", "admin@secondmarket.test").strip().lower()
+        admin_password = os.getenv("SEED_ADMIN_PASSWORD", "").strip() or secrets.token_urlsafe(24)
+        seller = User(
+            email=admin_email,
+            role=Role.ADMIN.value,
+            first_name="SecondMarket",
+            last_name="Admin",
+        )
+        seller.set_password(admin_password)
+        db.session.add(seller)
+        db.session.flush()
+        created["users"] += 1
+
+    for cat_data in payload.get("categories", []):
+        category = Category.query.filter_by(slug=cat_data["slug"]).one_or_none()
+        if category is None:
+            category = Category(
+                name=cat_data["name"],
+                slug=cat_data["slug"],
+                description=cat_data.get("description"),
+                image_url=cat_data.get("image_url"),
+                sort_order=cat_data.get("sort_order", 0),
+                is_active=True,
+            )
+            db.session.add(category)
+            created["categories"] += 1
+
+    db.session.flush()
+    categories_by_slug = {category.slug: category for category in Category.query.all()}
+
+    for product_data in payload.get("products", []):
+        if Product.query.filter_by(slug=product_data["slug"]).one_or_none() is not None:
+            continue
+        category = categories_by_slug.get(product_data["category_slug"])
+        if category is None:
+            continue
+
+        product = Product(
+            seller=seller,
+            category=category,
+            title=product_data["title"],
+            slug=product_data["slug"],
+            description=product_data["description"],
+            price_cents=product_data["price_cents"],
+            condition=product_data["condition"],
+            status=ProductStatus.AVAILABLE.value,
+            quantity=product_data.get("quantity", 1),
+            brand=product_data.get("brand"),
+            color=product_data.get("color"),
+            material=product_data.get("material"),
+            dimensions=product_data.get("dimensions"),
+        )
+        product.publish()
+        for img_data in product_data.get("images", []):
+            product.images.append(
+                ProductImage(
+                    image_url=img_data["image_url"],
+                    alt_text=img_data.get("alt_text") or product_data["title"],
+                    sort_order=img_data.get("sort_order", 0),
+                    is_primary=bool(img_data.get("is_primary", True)),
+                )
+            )
         db.session.add(product)
         created["products"] += 1
 
