@@ -341,3 +341,130 @@ def test_frontend_buyer_readiness_fixes_present():
     assert "data-forgot-form" in login_html
     assert "data-reset-form" in login_html
     assert "{{returnSection}}" in detail_html
+
+
+def test_forgot_password_email_contains_reset_link_and_completes_reset_flow(monkeypatch):
+    app = _setup_app()
+    app.config["APP_PUBLIC_BASE_URL"] = "https://shop.secondmarket.example"
+    client = app.test_client()
+    _register_buyer(client, email="resetflow@example.com")
+    email_service.sent_emails.clear()
+
+    # Unknown account still returns generic 200 and dispatches no email
+    unknown_resp = client.post("/api/v1/auth/forgot-password", json={"email": "missing@example.com"})
+    assert unknown_resp.status_code == 200
+    assert len(email_service.sent_emails) == 0
+
+    # Registered account creates token and dispatches reset link + token instructions
+    forgot_resp = client.post("/api/v1/auth/forgot-password", json={"email": "resetflow@example.com"})
+    assert forgot_resp.status_code == 200
+    token = forgot_resp.get_json()["data"]["dev_token"]
+    assert token
+
+    matching = [m for m in email_service.sent_emails if m["to"] == "resetflow@example.com"]
+    assert len(matching) == 1
+    expected_link = f"https://shop.secondmarket.example/login.html?reset_token={token}"
+    assert expected_link in matching[0]["text"]
+    assert matching[0]["html"] and expected_link in matching[0]["html"]
+
+    # Weak password rejected
+    weak_resp = client.post(
+        "/api/v1/auth/reset-password",
+        json={"token": token, "new_password": "weak"},
+    )
+    assert weak_resp.status_code == 422
+
+    # Valid reset completes and invalidates the token for reuse
+    reset_resp = client.post(
+        "/api/v1/auth/reset-password",
+        json={"token": token, "new_password": "NewPassword2026"},
+    )
+    assert reset_resp.status_code == 200
+
+    reuse_resp = client.post(
+        "/api/v1/auth/reset-password",
+        json={"token": token, "new_password": "AnotherPassword2026"},
+    )
+    assert reuse_resp.status_code == 400
+    assert reuse_resp.get_json()["error"]["code"] == "invalid_reset_token"
+
+    # Old password fails, new password succeeds
+    old_login = client.post(
+        "/api/v1/auth/login",
+        json={"email": "resetflow@example.com", "password": "Secondhand2026"},
+    )
+    assert old_login.status_code == 401
+
+    new_login = client.post(
+        "/api/v1/auth/login",
+        json={"email": "resetflow@example.com", "password": "NewPassword2026"},
+    )
+    assert new_login.status_code == 200
+
+    _teardown_app(app)
+
+
+def test_email_service_dispatches_via_smtp_and_flags_unconfigured_production(monkeypatch):
+    import smtplib
+
+    sent_calls = []
+
+    class FakeSMTP:
+        def __init__(self, host, port, timeout=None):
+            sent_calls.append({"host": host, "port": port, "timeout": timeout, "tls": False, "login": None})
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def starttls(self):
+            sent_calls[-1]["tls"] = True
+
+        def login(self, user, password):
+            sent_calls[-1]["login"] = (user, password)
+
+        def sendmail(self, from_addr, to_addrs, raw_msg):
+            sent_calls[-1]["from"] = from_addr
+            sent_calls[-1]["to"] = to_addrs
+            sent_calls[-1]["msg"] = raw_msg
+
+    monkeypatch.setattr(smtplib, "SMTP", FakeSMTP)
+    monkeypatch.setenv("SMTP_HOST", "smtp.example.com")
+    monkeypatch.setenv("SMTP_PORT", "587")
+    monkeypatch.setenv("SMTP_USE_TLS", "true")
+    monkeypatch.setenv("SMTP_USER", "mailer@example.com")
+    monkeypatch.setenv("SMTP_PASS", "app-password")
+    monkeypatch.setenv("EMAIL_FROM", "SecondMarket <no-reply@example.com>")
+
+    email_service.sent_emails.clear()
+    ok = email_service.send_password_reset(
+        "celisjomari711@gmail.com",
+        "tok_abc_123",
+        base_url="https://e-commerce-production-b648aa02.up.railway.app",
+    )
+    assert ok is True
+    assert len(sent_calls) == 1
+    assert sent_calls[0]["host"] == "smtp.example.com"
+    assert sent_calls[0]["port"] == 587
+    assert sent_calls[0]["timeout"] == 15.0
+    assert sent_calls[0]["tls"] is True
+    assert sent_calls[0]["login"] == ("mailer@example.com", "app-password")
+    assert sent_calls[0]["to"] == ["celisjomari711@gmail.com"]
+
+    import email as stdlib_email
+
+    parsed_msg = stdlib_email.message_from_string(sent_calls[0]["msg"])
+    decoded_parts = [
+        part.get_payload(decode=True).decode("utf-8")
+        for part in parsed_msg.walk()
+        if part.get_content_maintype() == "text"
+    ]
+    assert any("login.html?reset_token=tok_abc_123" in body for body in decoded_parts)
+
+    # Without SMTP_HOST in production runtime, send_email returns False instead of silently faking success
+    monkeypatch.delenv("SMTP_HOST", raising=False)
+    monkeypatch.setattr(email_service, "_is_production_runtime", lambda: True)
+    delivered = email_service.send_email("celisjomari711@gmail.com", "Test", "Body")
+    assert delivered is False
