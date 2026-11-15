@@ -345,9 +345,26 @@ class SecondMarketApp {
                 return this.state.productDetails[productId] || this.state.products.find((product) => product.id === productId) || null;
             }
 
+            previewCatalogMaxPrice(value, catalogCap) {
+                const label = document.getElementById('catalog-max-price-label');
+                if (!label) return;
+                const numericValue = parseInt(value, 10);
+                const cap = Number(catalogCap) || 50000;
+                label.textContent = (!Number.isFinite(numericValue) || numericValue >= cap)
+                    ? 'All prices'
+                    : this.formatPrice(numericValue);
+            }
+
+            formatCategoryLabel(name) {
+                const text = String(name || '').trim();
+                if (!text) return '';
+                return text.charAt(0).toUpperCase() + text.slice(1);
+            }
+
             categoryName(categorySlug) {
                 if (!categorySlug || categorySlug === 'all') return 'All Secondhand Finds';
-                return this.state.categories.find((category) => category.slug === categorySlug)?.name || categorySlug;
+                const matched = this.state.categories.find((category) => category.slug === categorySlug)?.name || categorySlug;
+                return this.formatCategoryLabel(matched);
             }
 
             categoryImage(index, categorySlug = '', categoryImageUrl = '') {

@@ -28,11 +28,14 @@
         ];
         const categoryOptionsHtml = categoryOptions.map((cat) => {
             const isActive = category === cat.slug;
+            const displayName = this.formatCategoryLabel
+                ? this.formatCategoryLabel(cat.name)
+                : String(cat.name || '');
             return `
             <li>
-                <button type="button" onclick="app.applyMarketplaceFilters({category: '${cat.slug}'})" class="w-full text-left py-2.5 px-3 min-h-[44px] sm:min-h-0 sm:py-2 rounded-md hover:bg-[#D7CEC1]/30 transition text-xs flex justify-between items-center ${isActive ? 'font-bold text-[#4E4638] bg-[#D7CEC1]/40 border border-[#B9A995]/50' : 'text-[#776B56]'}">
-                    <span class="truncate pr-1">${cat.name}</span>
-                    <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full ${isActive ? 'bg-[#4E4638] text-white' : 'bg-[#FAF8F5] text-[#6E614D] border border-[#D7CEC1]/60'}">${cat.productCount}</span>
+                <button type="button" onclick="app.applyMarketplaceFilters({category: '${cat.slug}'})" class="w-full text-left py-2.5 px-3 min-h-[44px] sm:min-h-0 sm:py-2 rounded-md hover:bg-[#D7CEC1]/30 transition text-xs flex justify-between items-center gap-2 min-w-0 ${isActive ? 'font-bold text-[#4E4638] bg-[#D7CEC1]/40 border border-[#B9A995]/50' : 'text-[#776B56]'}">
+                    <span class="truncate pr-1">${displayName}</span>
+                    <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${isActive ? 'bg-[#4E4638] text-white' : 'bg-[#FAF8F5] text-[#6E614D] border border-[#D7CEC1]/60'}">${cat.productCount}</span>
                 </button>
             </li>
         `;

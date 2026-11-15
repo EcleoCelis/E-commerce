@@ -276,3 +276,31 @@ def test_storefront_includes_dedicated_about_page_and_credits():
         "Jomarie Celis",
     ):
         assert developer_name in about_js
+
+
+def test_catalog_header_sort_and_filter_layout_styles_present():
+    app = create_app(TestingConfig)
+    client = app.test_client()
+
+    index_html = client.get("/").get_data(as_text=True)
+    catalog_template = client.get("/marketplace/pages/catalog.html").get_data(as_text=True)
+    catalog_js = client.get("/static/js/marketplace/pages/catalog-page.js").get_data(as_text=True)
+    app_js = client.get("/static/js/marketplace/app.js").get_data(as_text=True)
+    css = client.get("/static/css/marketplace/base.css").get_data(as_text=True)
+
+    for html in (index_html, catalog_template):
+        assert "catalog-header" in html
+        assert "catalog-heading-group" in html
+        assert "catalog-sort-group" in html
+        assert "catalog-sort-select" in html
+        assert "catalog-max-price-label" in html
+
+    assert ".catalog-header" in css
+    assert ".catalog-sort-group" in css
+    assert ".catalog-sort-select.form-input" in css
+    assert ".md\\:w-auto" in css
+    assert ".sm\\:w-48" in css
+    assert ".mt-1\\.5" in css
+    assert ".space-y-5" in css
+    assert "formatCategoryLabel" in catalog_js
+    assert "previewCatalogMaxPrice" in app_js
