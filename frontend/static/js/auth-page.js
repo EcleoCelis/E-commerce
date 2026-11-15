@@ -9,13 +9,16 @@
         message.className = `auth-message is-visible is-${type}`;
     }
 
-    function setLoading(isLoading) {
-        const submitButton = form?.querySelector("button[type='submit']");
-        if (!submitButton) return;
+    function setButtonLoading(button, isLoading, loadingText = "Please wait...") {
+        if (!button) return;
 
-        submitButton.disabled = isLoading;
-        submitButton.dataset.originalText = submitButton.dataset.originalText || submitButton.textContent;
-        submitButton.textContent = isLoading ? "Please wait..." : submitButton.dataset.originalText;
+        button.disabled = isLoading;
+        button.dataset.originalText = button.dataset.originalText || button.textContent;
+        button.textContent = isLoading ? loadingText : button.dataset.originalText;
+    }
+
+    function setLoading(isLoading) {
+        setButtonLoading(form?.querySelector("button[type='submit']"), isLoading);
     }
 
     function getSafeNextUrl() {
@@ -105,23 +108,115 @@
 
     const forgotForm = document.querySelector("[data-forgot-form]");
     const resetForm = document.querySelector("[data-reset-form]");
+    const LOGIN_MODE_COPY = {
+        login: {
+            eyebrow: "Customer Portal",
+            title: "Sign In",
+            subtitle: "Access your buyer account, saved items, and order activity.",
+            docTitle: "Sign In | SecondMarket",
+        },
+        forgot: {
+            eyebrow: "Account Recovery",
+            title: "Reset Password",
+            subtitle: "Enter your account email and we will send password reset instructions.",
+            docTitle: "Reset Password | SecondMarket",
+        },
+        reset: {
+            eyebrow: "Account Recovery",
+            title: "Choose New Password",
+            subtitle: "Paste your reset token and set a new password for your account.",
+            docTitle: "Choose New Password | SecondMarket",
+        },
+    };
 
-    function switchLoginMode(mode, prefillToken = "") {
+    function syncLoginModeUrl(mode, historyMode = "push") {
+        if (!historyMode || typeof window.history?.pushState !== "function") return;
+        try {
+            const url = new URL(window.location.href);
+            if (mode === "login") {
+                url.searchParams.delete("mode");
+                url.searchParams.delete("reset_token");
+            } else {
+                url.searchParams.set("mode", mode);
+                if (mode === "forgot") {
+                    url.searchParams.delete("reset_token");
+                }
+            }
+            const nextUrl = `${url.pathname}${url.search}${url.hash}`;
+            const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+            if (nextUrl === currentUrl) return;
+            if (historyMode === "replace") {
+                window.history.replaceState({ authMode: mode }, "", nextUrl);
+            } else {
+                window.history.pushState({ authMode: mode }, "", nextUrl);
+            }
+        } catch (err) {
+            // Ignore URL update errors
+        }
+    }
+
+    function focusActiveLoginField(mode, hasToken) {
+        let target = null;
+        if (mode === "forgot") {
+            target = forgotForm?.querySelector("[name='email']");
+        } else if (mode === "reset") {
+            target = hasToken
+                ? resetForm?.querySelector("[name='new_password']")
+                : resetForm?.querySelector("[name='token']");
+        } else {
+            target = form?.querySelector("[name='email']");
+        }
+        target?.focus();
+    }
+
+    function switchLoginMode(mode, prefillToken = "", options = {}) {
         if (!form || !forgotForm || !resetForm) return;
-        form.hidden = mode !== "login";
-        forgotForm.hidden = mode !== "forgot";
-        resetForm.hidden = mode !== "reset";
+        const normalizedMode = mode === "forgot" || mode === "reset" ? mode : "login";
+        const copy = LOGIN_MODE_COPY[normalizedMode];
+
+        const formsByMode = { login: form, forgot: forgotForm, reset: resetForm };
+        Object.entries(formsByMode).forEach(([key, targetForm]) => {
+            const isActive = key === normalizedMode;
+            targetForm.hidden = !isActive;
+            targetForm.setAttribute("aria-hidden", isActive ? "false" : "true");
+        });
+
+        const footer = document.querySelector(".auth-footer");
+        if (footer) {
+            footer.hidden = normalizedMode !== "login";
+            footer.setAttribute("aria-hidden", normalizedMode === "login" ? "false" : "true");
+        }
+
         const heading = document.getElementById("login-title");
-        if (heading) {
-            heading.textContent = mode === "forgot" ? "Reset Password" : mode === "reset" ? "Choose New Password" : "Sign In";
+        const eyebrow = document.querySelector("[data-auth-eyebrow]");
+        const subtitle = document.querySelector("[data-auth-subtitle]");
+        if (heading) heading.textContent = copy.title;
+        if (eyebrow) eyebrow.textContent = copy.eyebrow;
+        if (subtitle) subtitle.textContent = copy.subtitle;
+        document.title = copy.docTitle;
+
+        if (normalizedMode === "forgot") {
+            const loginEmail = form.querySelector("[name='email']")?.value?.trim();
+            const forgotEmailInput = forgotForm.querySelector("[name='email']");
+            if (forgotEmailInput && !forgotEmailInput.value.trim() && loginEmail) {
+                forgotEmailInput.value = loginEmail;
+            }
         }
-        if (prefillToken) {
-            const tokenInput = resetForm.querySelector("[name='token']");
-            if (tokenInput) tokenInput.value = prefillToken;
+
+        const tokenInput = resetForm.querySelector("[name='token']");
+        if (prefillToken && tokenInput) {
+            tokenInput.value = prefillToken;
         }
-        if (message) {
+
+        if (message && !options.preserveMessage) {
             message.textContent = "";
             message.className = "auth-message";
+        }
+
+        syncLoginModeUrl(normalizedMode, options.history === undefined ? "push" : options.history);
+
+        if (!options.skipFocus) {
+            focusActiveLoginField(normalizedMode, Boolean(prefillToken || tokenInput?.value?.trim()));
         }
     }
 
@@ -135,21 +230,31 @@
         forgotForm.addEventListener("submit", async (event) => {
             event.preventDefault();
             const submitBtn = forgotForm.querySelector("button[type='submit']");
-            const email = (new FormData(forgotForm).get("email") || "").toString().trim();
-            if (submitBtn) submitBtn.disabled = true;
+            const emailInput = forgotForm.querySelector("[name='email']");
+            const email = (emailInput?.value || "").trim();
+            if (!email) {
+                setMessage("Enter the email address associated with your account.", "error");
+                emailInput?.focus();
+                return;
+            }
+
+            setButtonLoading(submitBtn, true, "Sending...");
             try {
                 const payload = await window.SecondMarketAuthAPI.forgotPassword(email);
                 const devToken = payload?.data?.dev_token;
                 if (devToken) {
-                    switchLoginMode("reset", devToken);
                     setMessage("Reset token generated. Choose your new password below.", "success");
+                    switchLoginMode("reset", devToken, { preserveMessage: true });
                 } else {
-                    setMessage(payload?.message || "If an account matches that email, reset instructions were sent.", "success");
+                    setMessage(
+                        payload?.message || "If an account matches that email, reset instructions were sent.",
+                        "success"
+                    );
                 }
             } catch (error) {
                 setMessage(window.SecondMarketAuthAPI.formatError(error), "error");
             } finally {
-                if (submitBtn) submitBtn.disabled = false;
+                setButtonLoading(submitBtn, false);
             }
         });
     }
@@ -158,33 +263,58 @@
         resetForm.addEventListener("submit", async (event) => {
             event.preventDefault();
             const submitBtn = resetForm.querySelector("button[type='submit']");
-            const data = new FormData(resetForm);
-            const token = (data.get("token") || "").toString().trim();
-            const newPassword = (data.get("new_password") || "").toString();
-            if (submitBtn) submitBtn.disabled = true;
+            const tokenInput = resetForm.querySelector("[name='token']");
+            const passwordInput = resetForm.querySelector("[name='new_password']");
+            const token = (tokenInput?.value || "").trim();
+            const newPassword = (passwordInput?.value || "").toString();
+
+            if (!token) {
+                setMessage("Paste your password reset token to continue.", "error");
+                tokenInput?.focus();
+                return;
+            }
+            if (!newPassword) {
+                setMessage("Enter your new password.", "error");
+                passwordInput?.focus();
+                return;
+            }
+
+            setButtonLoading(submitBtn, true, "Updating...");
             try {
                 const payload = await window.SecondMarketAuthAPI.resetPassword({ token, new_password: newPassword });
-                switchLoginMode("login");
+                resetForm.reset();
                 setMessage(payload?.message || "Password updated. Sign in with your new password.", "success");
+                switchLoginMode("login", "", { preserveMessage: true });
             } catch (error) {
                 setMessage(window.SecondMarketAuthAPI.formatError(error), "error");
             } finally {
-                if (submitBtn) submitBtn.disabled = false;
+                setButtonLoading(submitBtn, false);
             }
         });
     }
 
-    try {
-        const params = new URLSearchParams(window.location.search);
-        const urlToken = (params.get("reset_token") || "").trim();
-        const urlMode = (params.get("mode") || "").trim();
-        if (urlToken) {
-            switchLoginMode("reset", urlToken);
-        } else if (urlMode === "forgot" || urlMode === "reset") {
-            switchLoginMode(urlMode);
+    function applyLoginModeFromUrl(options = {}) {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const urlToken = (params.get("reset_token") || "").trim();
+            const urlMode = (params.get("mode") || "").trim();
+            if (urlToken) {
+                switchLoginMode("reset", urlToken, { history: false, ...options });
+            } else if (urlMode === "forgot" || urlMode === "reset") {
+                switchLoginMode(urlMode, "", { history: false, ...options });
+            } else if (options.allowLoginFallback) {
+                switchLoginMode("login", "", { history: false, ...options });
+            }
+        } catch (err) {
+            // Ignore URL search parsing issues
         }
-    } catch (err) {
-        // Ignore URL search parsing issues
+    }
+
+    if (forgotForm && resetForm) {
+        applyLoginModeFromUrl({ skipFocus: true });
+        window.addEventListener("popstate", () => {
+            applyLoginModeFromUrl({ allowLoginFallback: true, skipFocus: true });
+        });
     }
 
     document.querySelectorAll("[data-password-toggle]").forEach((toggleButton) => {

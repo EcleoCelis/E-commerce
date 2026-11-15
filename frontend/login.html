@@ -19,9 +19,9 @@
 
         <section class="auth-panel">
             <header class="auth-panel-header">
-                <span class="auth-eyebrow">Customer Portal</span>
+                <span class="auth-eyebrow" data-auth-eyebrow>Customer Portal</span>
                 <h1 id="login-title">Sign In</h1>
-                <p class="auth-subtitle">Access your buyer account, saved items, and order activity.</p>
+                <p class="auth-subtitle" data-auth-subtitle>Access your buyer account, saved items, and order activity.</p>
             </header>
 
             <div data-auth-message class="auth-message" role="status" aria-live="polite"></div>
@@ -34,7 +34,7 @@
                 <div class="auth-field">
                     <div class="auth-label-row">
                         <label for="login-password">Password</label>
-                        <button type="button" class="auth-text-link" data-auth-mode-switch="forgot" style="background:none;border:0;padding:0;cursor:pointer;font-size:0.82rem;">Forgot password?</button>
+                        <button type="button" class="auth-text-link auth-link-btn" data-auth-mode-switch="forgot">Forgot password?</button>
                     </div>
                     <div class="auth-password-wrap">
                         <input id="login-password" name="password" type="password" required autocomplete="current-password" placeholder="Enter your password" class="form-input">
@@ -44,19 +44,19 @@
                 <button type="submit" class="btn-primary">Sign In</button>
             </form>
 
-            <form data-forgot-form class="auth-grid" hidden novalidate>
+            <form data-forgot-form class="auth-grid" hidden aria-hidden="true" novalidate>
                 <div class="auth-field">
                     <label for="forgot-email">Account Email</label>
                     <input id="forgot-email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" class="form-input">
                 </div>
                 <button type="submit" class="btn-primary">Send Reset Instructions</button>
-                <div style="display:flex;justify-content:space-between;gap:1rem;font-size:0.85rem;">
-                    <button type="button" class="auth-text-link" data-auth-mode-switch="reset" style="background:none;border:0;padding:0;cursor:pointer;">Have a reset token?</button>
-                    <button type="button" class="auth-text-link" data-auth-mode-switch="login" style="background:none;border:0;padding:0;cursor:pointer;">Back to Sign In</button>
+                <div class="auth-form-links">
+                    <button type="button" class="auth-text-link auth-link-btn" data-auth-mode-switch="reset">Have a reset token?</button>
+                    <button type="button" class="auth-text-link auth-link-btn" data-auth-mode-switch="login">Back to Sign In</button>
                 </div>
             </form>
 
-            <form data-reset-form class="auth-grid" hidden novalidate>
+            <form data-reset-form class="auth-grid" hidden aria-hidden="true" novalidate>
                 <div class="auth-field">
                     <label for="reset-token-input">Reset Token</label>
                     <input id="reset-token-input" name="token" type="text" required autocomplete="off" placeholder="Paste your reset token" class="form-input">
@@ -69,8 +69,8 @@
                     </div>
                 </div>
                 <button type="submit" class="btn-primary">Update Password</button>
-                <div style="text-align:right;font-size:0.85rem;">
-                    <button type="button" class="auth-text-link" data-auth-mode-switch="login" style="background:none;border:0;padding:0;cursor:pointer;">Back to Sign In</button>
+                <div class="auth-form-links auth-form-links--end">
+                    <button type="button" class="auth-text-link auth-link-btn" data-auth-mode-switch="login">Back to Sign In</button>
                 </div>
             </form>
 

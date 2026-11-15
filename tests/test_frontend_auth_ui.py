@@ -74,3 +74,24 @@ def test_login_and_register_pages_are_served_as_separate_files():
     assert "Log in instead" in register_html
     assert "btn-outline" not in register_html
     assert "/static/js/auth-page.js" in register_html
+
+
+def test_login_page_hides_password_reset_forms_until_forgot_password_selected():
+    app = create_app(TestingConfig)
+    client = app.test_client()
+
+    login_html = client.get("/login.html").get_data(as_text=True)
+    auth_css = client.get("/static/css/auth.css").get_data(as_text=True)
+    auth_js = client.get("/static/js/auth-page.js").get_data(as_text=True)
+
+    # Reset forms remain hidden initially and CSS enforces display: none despite .auth-grid
+    assert '<form data-forgot-form class="auth-grid" hidden' in login_html
+    assert '<form data-reset-form class="auth-grid" hidden' in login_html
+    assert 'data-auth-mode-switch="forgot"' in login_html
+    assert 'data-auth-eyebrow' in login_html
+    assert 'data-auth-subtitle' in login_html
+    assert '.auth-grid[hidden]' in auth_css
+    assert 'display: none !important;' in auth_css
+    assert 'switchLoginMode' in auth_js
+    assert 'popstate' in auth_js
+    assert 'data-auth-mode-switch' in auth_js
